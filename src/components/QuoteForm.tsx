@@ -7,7 +7,7 @@ type Vehicle = {
   registrationNumber: string;
   make: string | null;
   model: string | null;
-  colour: string | null;
+  color: string | null;
   yearOfManufacture: number | null;
   engineCapacity: number | null;
   fuelType: string | null;
