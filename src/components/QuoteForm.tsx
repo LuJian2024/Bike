@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 // import { useServerFn } from "@tanstack/react-start";
 import { ArrowRight, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
