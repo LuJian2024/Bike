@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 // import { useServerFn } from "@tanstack/react-start";
 import { ArrowRight, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
@@ -180,7 +181,7 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
               {vehicle.yearOfManufacture && (
                 <Row label="Year" value={String(vehicle.yearOfManufacture)} />
               )}
-              {vehicle.colour && <Row label="Colour" value={vehicle.colour} />}
+              {vehicle.color && <Row label="Colour" value={vehicle.color} />}
               {vehicle.engineCapacity && (
                 <Row label="Engine" value={`${vehicle.engineCapacity}cc`} />
               )}
