@@ -1,8 +1,9 @@
 // import { createFileRoute } from "@tanstack/react-router";
+import Link from "next/link";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { QuoteForm } from "@/components/QuoteForm";
-import { Phone, Mail, Clock, MapPin } from "lucide-react";
+import { Phone, Mail, Clock, MapPin, MessageSquare } from "lucide-react";
 import { Metadata } from "next";
 
 // export const Route = createFileRoute("/contact")({
@@ -45,16 +46,6 @@ export default function ContactPage() {
 
       <section className="mx-auto grid max-w-7xl gap-12 px-4 py-20 md:grid-cols-2 md:px-8">
         <div className="space-y-6">
-          <a href="tel:08001234567" className="group flex items-start gap-5 rounded-2xl border border-border bg-card p-6 transition-all hover:border-primary/60">
-            <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-all group-hover:bg-primary group-hover:text-primary-foreground">
-              <Phone className="h-6 w-6" />
-            </div>
-            <div>
-              <h3 className="font-display text-xl tracking-wide">Call us</h3>
-              <p className="mt-1 text-2xl font-semibold text-primary">0800 123 4567</p>
-              <p className="mt-1 text-sm text-muted-foreground">Fastest way to get a quote — usually under a minute.</p>
-            </div>
-          </a>
 
           <a href="mailto:hello@motobuy.co.uk" className="group flex items-start gap-5 rounded-2xl border border-border bg-card p-6 transition-all hover:border-primary/60">
             <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-all group-hover:bg-primary group-hover:text-primary-foreground">
@@ -66,6 +57,17 @@ export default function ContactPage() {
               <p className="mt-1 text-sm text-muted-foreground">Send photos of your bike — we will come back with a price.</p>
             </div>
           </a>
+
+                <Link href="/" className="group flex items-start gap-5 rounded-2xl border border-border bg-card p-6 transition-all hover:border-primary/60">
+            <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-all group-hover:bg-primary group-hover:text-primary-foreground">
+              <MessageSquare className="h-6 w-6" />
+            </div>
+            <div>
+              <h3 className="font-display text-xl tracking-wide">Online Quote</h3>
+              <p className="mt-1 text-lg text-foreground">Fill out the form</p>
+              <p className="mt-1 text-sm text-muted-foreground">Fastest way to get a quote — usually under a minute.</p>
+            </div>
+          </Link>
 
           <div className="flex items-start gap-5 rounded-2xl border border-border bg-card p-6">
             <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">

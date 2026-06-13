@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Phone, Menu, X } from "lucide-react";
+import { Menu, X, ClipboardCheck } from "lucide-react";
 import { useState } from "react";
 
 const nav = [
@@ -35,13 +35,13 @@ export function SiteHeader() {
           ))}
         </nav>
 
-        <a
+        {/* <a
           href="tel:08001234567"
           className="hidden items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-4 py-2 text-sm font-semibold text-primary transition-all hover:bg-primary hover:text-primary-foreground md:flex"
         >
           <Phone className="h-4 w-4" />
           0800 123 4567
-        </a>
+        </a> */}
 
         <button
           aria-label="Toggle menu"
@@ -66,12 +66,13 @@ export function SiteHeader() {
                 {n.label}
               </Link>
             ))}
-            <a
-              href="tel:08001234567"
+                       <Link
+              href="/contact"
+              onClick={() => setOpen(false)}
               className="mt-2 flex items-center justify-center gap-2 rounded-full bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground"
             >
-              <Phone className="h-4 w-4" /> 0800 123 4567
-            </a>
+              <ClipboardCheck className="h-4 w-4" /> Get a Quote
+            </Link>
           </div>
         </div>
       )}
