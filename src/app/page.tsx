@@ -1,32 +1,11 @@
-// "use client";
-// import { useState } from "react";
-
-// export default function Home() {
-//   return (
-//     <div>here is home page</div>
-//   );
-//  }
-
 "use client";
 import Link from "next/link";
-import { Wrench, AlertTriangle, XCircle, Bike, Phone, Truck, PoundSterling, Clock, ShieldCheck, ArrowRight } from "lucide-react";
+import { Wrench, ClipboardCheck, AlertTriangle, XCircle, Bike, Phone, Truck, PoundSterling, Clock, ShieldCheck, ArrowRight } from "lucide-react";
 import Image from "next/image";
-import heroImg from "@/assets/hero-motorcycle.jpeg";
+import heroImg from "@/assets/hero-3.png";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { QuoteForm } from "@/components/QuoteForm";
-
-// export const Route = createFileRoute("/")({
-//   head: () => ({
-//     meta: [
-//       { title: "MotoBuy — We Buy Any Motorbike for Cash | UK Nationwide" },
-//       { name: "description", content: "Sell your motorbike today. Damaged, non-runner or MOT failed — we pay the best price with free same-day collection across the UK." },
-//       { property: "og:title", content: "MotoBuy — We Buy Any Motorbike" },
-//       { property: "og:description", content: "Best prices. Free same-day collection. UK nationwide." },
-//     ],
-//   }),
-//   component: Home,
-// });
 
 export default function page() {
   return <Home />;
@@ -57,15 +36,7 @@ function Home() {
     <div className="min-h-screen bg-background text-foreground">
       <SiteHeader />
 
-      {/* HERO */}
       <section className="relative overflow-hidden">
-        {/* <img
-          src={heroImg}
-          alt="Close-up of a rusty vintage motorcycle engine with chrome exhaust"
-          width={1920}
-          height={1080}
-          className="absolute inset-0 h-full w-full object-cover opacity-60"
-        /> */}
         <Image
   src={heroImg}
   alt="Close-up of a rusty vintage motorcycle engine with chrome exhaust"
@@ -95,13 +66,13 @@ function Home() {
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-4">
-              <a
-                href="tel:08001234567"
+               <Link
+                href="/contact"
                 className="group inline-flex items-center gap-3 rounded-md bg-primary px-6 py-3 font-semibold text-primary-foreground transition-all hover:shadow-glow"
               >
-                <Phone className="h-4 w-4" />
-                Call 0800 123 4567
-              </a>
+                <ClipboardCheck className="h-4 w-4" />
+                Get a Free Quote
+              </Link>
               <Link
                 href="/how-it-works"
                 className="group inline-flex items-center gap-2 text-sm font-medium uppercase tracking-widest text-foreground hover:text-primary"
@@ -208,18 +179,18 @@ function Home() {
             across the UK.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
-            <a
-              href="tel:08001234567"
+            <Link
+              href="/contact"
               className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 font-semibold text-primary-foreground transition-all hover:shadow-glow"
             >
-              <Phone className="h-4 w-4" /> 0800 123 4567
-            </a>
-            <Link
+              <ClipboardCheck className="h-4 w-4" /> Get a Free Quote
+            </Link>
+            {/* <Link
               href="/contact"
               className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-6 py-3 font-medium transition-colors hover:border-primary"
             >
               Get a quote online
-            </Link>
+            </Link> */}
           </div>
         </div>
       </section>

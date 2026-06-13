@@ -6,17 +6,6 @@ import { QuoteForm } from "@/components/QuoteForm";
 import { Phone, Mail, Clock, MapPin, MessageSquare } from "lucide-react";
 import { Metadata } from "next";
 
-// export const Route = createFileRoute("/contact")({
-//   head: () => ({
-//     meta: [
-//       { title: "Contact MotoBuy — Get a Free Motorbike Quote" },
-//       { name: "description", content: "Get in touch with MotoBuy for a free, no-obligation motorbike valuation. Call, email or use our online quote form — we respond fast." },
-//       { property: "og:title", content: "Contact MotoBuy" },
-//       { property: "og:description", content: "Get a free motorbike quote today." },
-//     ],
-//   }),
-//   component: ContactPage,
-// });
 export const metadata: Metadata = {
   title: "Contact MotoBuy — Get a Free Motorbike Quote",
   description: "Get in touch with MotoBuy for a free, no-obligation motorbike valuation. Call, email or use our online quote form — we respond fast.",
@@ -47,13 +36,13 @@ export default function ContactPage() {
       <section className="mx-auto grid max-w-7xl gap-12 px-4 py-20 md:grid-cols-2 md:px-8">
         <div className="space-y-6">
 
-          <a href="mailto:hello@motobuy.co.uk" className="group flex items-start gap-5 rounded-2xl border border-border bg-card p-6 transition-all hover:border-primary/60">
+          <a href="julijana3uneva@gmail.com" className="group flex items-start gap-5 rounded-2xl border border-border bg-card p-6 transition-all hover:border-primary/60">
             <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-all group-hover:bg-primary group-hover:text-primary-foreground">
               <Mail className="h-6 w-6" />
             </div>
             <div>
               <h3 className="font-display text-xl tracking-wide">Email</h3>
-              <p className="mt-1 text-lg text-foreground">hello@motobuy.co.uk</p>
+              <p className="mt-1 text-lg text-foreground">Urbanmoto18@gmail.com</p>
               <p className="mt-1 text-sm text-muted-foreground">Send photos of your bike — we will come back with a price.</p>
             </div>
           </a>

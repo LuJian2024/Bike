@@ -1,6 +1,6 @@
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { Phone, PoundSterling, Truck, FileText, ArrowRight } from "lucide-react";
+import { ClipboardCheck, PoundSterling, Truck, FileText, ArrowRight } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
 
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 };
 
 const steps = [
-  { icon: Phone, title: "1. Get Your Quote", text: "Call us or use the online form with your reg. We give you an instant, no-obligation valuation based on live market data." },
+  { icon: ClipboardCheck, title: "1. Get Your Quote", text: "Use the online form with your reg. We give you an instant, no-obligation valuation based on live market data." },
   { icon: PoundSterling, title: "2. Accept the Offer", text: "If you're happy with the price, just say yes. No haggling games, no hidden deductions on collection day." },
   { icon: Truck, title: "3. Free Collection", text: "We come to your home or work — same day where possible. UK nationwide, no charge ever." },
   { icon: FileText, title: "4. Get Paid", text: "Instant bank transfer the moment our driver inspects the bike. We handle all DVLA paperwork for you." },
@@ -63,10 +63,10 @@ export default function HowItWorks() {
             Most quotes happen in under 60 seconds. There is nothing to lose.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
-            <a href="tel:08001234567" className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 font-semibold text-primary-foreground transition-all hover:shadow-glow">
+            {/* <a href="tel:08001234567" className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 font-semibold text-primary-foreground transition-all hover:shadow-glow">
               <Phone className="h-4 w-4" /> 0800 123 4567
-            </a>
-            <Link href="/contact" className="group inline-flex items-center gap-2 rounded-md border border-border bg-card px-6 py-3 font-medium hover:border-primary">
+            </a> */}
+            <Link href="/contact" className="group inline-flex items-center gap-2 rounded-md border border-border bg-primary px-6 py-3 font-medium hover:border-primary">
               Get a quote online
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
