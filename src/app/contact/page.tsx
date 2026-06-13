@@ -3,7 +3,7 @@ import Link from "next/link";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { QuoteForm } from "@/components/QuoteForm";
-import { Phone, Mail, Clock, MapPin } from "lucide-react";
+import { Phone, Mail, Clock, MapPin, MessageSquare } from "lucide-react";
 import { Metadata } from "next";
 
 // export const Route = createFileRoute("/contact")({
@@ -58,7 +58,7 @@ export default function ContactPage() {
             </div>
           </a>
 
-                <Link to="/" className="group flex items-start gap-5 rounded-2xl border border-border bg-card p-6 transition-all hover:border-primary/60">
+                <Link href="/" className="group flex items-start gap-5 rounded-2xl border border-border bg-card p-6 transition-all hover:border-primary/60">
             <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-all group-hover:bg-primary group-hover:text-primary-foreground">
               <MessageSquare className="h-6 w-6" />
             </div>
