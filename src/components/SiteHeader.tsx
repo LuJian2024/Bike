@@ -17,10 +17,11 @@ export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 md:px-8">
-        <Link href="/" className="flex items-center gap-2 font-display text-2xl tracking-wider">
-          <span className="text-foreground">MOTO</span>
-          <span className="rounded bg-primary px-2 py-0.5 text-primary-foreground">BUY</span>
-        </Link>
+<Link href="/" className="flex items-center font-sans font-black text-xl uppercase tracking-tight gap-1">
+  <span className="text-foreground">CASH</span>
+  <span className="bg-primary text-primary-foreground px-1.5 py-0.5 text-base rounded font-black tracking-normal">FOR</span>
+  <span className="text-foreground">BIKES</span>
+</Link>
 
         <nav className="hidden items-center gap-8 md:flex">
           {nav.map((n) => (
@@ -28,20 +29,20 @@ export function SiteHeader() {
               key={n.to}
               href={n.to}
               className="text-sm font-medium uppercase tracking-wide text-muted-foreground transition-colors hover:text-primary"
-            //   activeProps={{ className: "text-primary" }}
+              // activeProps={{ className: "text-primary" }}
             >
               {n.label}
             </Link>
           ))}
         </nav>
 
-        {/* <a
-          href="tel:08001234567"
+        <Link
+          href="/contact"
           className="hidden items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-4 py-2 text-sm font-semibold text-primary transition-all hover:bg-primary hover:text-primary-foreground md:flex"
         >
-          <Phone className="h-4 w-4" />
-          0800 123 4567
-        </a> */}
+          <ClipboardCheck className="h-4 w-4" />
+          Get a Quote
+        </Link>
 
         <button
           aria-label="Toggle menu"
@@ -60,13 +61,13 @@ export function SiteHeader() {
                 key={n.to}
                 href={n.to}
                 onClick={() => setOpen(false)}
-                className="py-3 text-sm font-medium uppercase tracking-wide text-muted-foreground transition-colors hover:text-primary"
+                className="py-3 text-sm font-medium uppercase tracking-wide text-muted-foreground"
                 // activeProps={{ className: "text-primary" }}
               >
                 {n.label}
               </Link>
             ))}
-                       <Link
+            <Link
               href="/contact"
               onClick={() => setOpen(false)}
               className="mt-2 flex items-center justify-center gap-2 rounded-full bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground"
