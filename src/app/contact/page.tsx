@@ -1,5 +1,5 @@
 // import { createFileRoute } from "@tanstack/react-router";
-import { Link } from "next/link";
+import Link from "next/link";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { QuoteForm } from "@/components/QuoteForm";
