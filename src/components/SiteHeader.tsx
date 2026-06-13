@@ -66,12 +66,13 @@ export function SiteHeader() {
                 {n.label}
               </Link>
             ))}
-            <a
-              href="tel:08001234567"
+                       <Link
+              to="/contact"
+              onClick={() => setOpen(false)}
               className="mt-2 flex items-center justify-center gap-2 rounded-full bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground"
             >
-              <Phone className="h-4 w-4" /> 0800 123 4567
-            </a>
+              <ClipboardCheck className="h-4 w-4" /> Get a Quote
+            </Link>
           </div>
         </div>
       )}
