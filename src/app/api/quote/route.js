@@ -50,7 +50,7 @@ export async function POST(request) {
 
     const { registrationNumber } = parsed.data;
     const apiKey = process.env.DVLA_API_KEY;
-    
+
     if (!apiKey) {
       return NextResponse.json({ ok: false, error: "Vehicle lookup is not configured." }, { status: 500 });
     }
@@ -77,7 +77,7 @@ export async function POST(request) {
       }
 
       const v = await res.json();
-      
+
       return NextResponse.json({
         ok: true,
         vehicle: {
@@ -108,17 +108,57 @@ export async function POST(request) {
 
     const data = parsed.data;
     const reg = data.registrationNumber.toUpperCase();
-    const v = data.vehicle ?? {};
-    
+
+    // 👇 新增：如果前端没有提供 vehicle 信息，后端自动获取
+    let vehicleData = data.vehicle;
+    console.log("前端有没有提供data.vehicle", vehicleData);
+
+    if (!vehicleData && reg) {
+      console.log("后端自动获取车辆信息:", reg);
+      try {
+        const dvlaRes = await fetch(
+          "https://driver-vehicle-licensing.api.gov.uk/vehicle-enquiry/v1/vehicles",
+          {
+            method: "POST",
+            headers: {
+              "x-api-key": process.env.DVLA_API_KEY,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ registrationNumber: reg }),
+          }
+        );
+
+        if (dvlaRes.ok) {
+          const v = await dvlaRes.json();
+          vehicleData = {
+            make: v.make ?? null,
+            model: v.model ?? null,
+            colour: v.colour ?? null,
+            yearOfManufacture: v.yearOfManufacture ?? null,
+            engineCapacity: v.engineCapacity ?? null,
+            fuelType: v.fuelType ?? null,
+            taxStatus: v.taxStatus ?? null,
+            motStatus: v.motStatus ?? null,
+          };
+          console.log("后端自动获取成功");
+        }
+      } catch (err) {
+        console.error("后端自动获取失败:", err);
+      }
+    }
+
+    const v = vehicleData ?? {};
+    console.log("v", v);
     console.log("Preparing to send email to company...");
 
     const resend = new Resend(process.env.RESEND_API_KEY);
-    
+
     try {
       // Send email to company
       const { data: emailData, error: emailError } = await resend.emails.send({
         from: 'MotoBuy <noreply@cashforbikes.co.uk>',
         // to: ['julijana3uneva@gmail.com'],
+        //from: 'MotoBuy <onboarding@resend.dev>',
         to: ['jian.lu.ou@gmail.com'],
         subject: `[New Quote] ${data.name} - ${reg}`,
         replyTo: data.email,
@@ -146,7 +186,7 @@ export async function POST(request) {
       }
 
       console.log("Email sent successfully:", emailData);
-      
+
       // Optional: Send confirmation email to customer (don't await, avoid timeout)
       resend.emails.send({
         from: 'MotoBuy <noreply@cashforbikes.co.uk>', // Use the same verified domain
