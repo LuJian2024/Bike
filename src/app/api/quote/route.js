@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { Resend } from 'resend';
 
-// 1. Шема за валидација на возило (DVLA Lookup)
 const lookupSchema = z.object({
   registrationNumber: z
     .string()
@@ -10,124 +10,52 @@ const lookupSchema = z.object({
     .transform((v) => v.replace(/\s+/g, "").toUpperCase()),
 });
 
-// 2. Шема за валидација на форма за понуда (Submit Quote)
 const submitSchema = z.object({
-  name: z.string().trim().min(2).max(80),
+  name: z.string().trim().min(1).max(80),
   email: z.string().trim().email().max(160),
-  phone: z.string().trim().min(6).max(30),
-  postcode: z.string().trim().min(3).max(12),
+  phone: z.string().trim().min(1).max(30),
+  postcode: z.string().trim().min(1).max(12),
   registrationNumber: z.string().trim().min(1).max(10),
   mileage: z.string().trim().min(1).max(12),
   condition: z.enum(["Excellent", "Good", "Fair", "Poor", "Heavily damaged / Non-runner"]),
   notes: z.string().trim().max(1000).optional().default(""),
-  vehicle: z
-    .object({
-      make: z.string().nullable().optional(),
-      model: z.string().nullable().optional(),
-      colour: z.string().nullable().optional(),
-      yearOfManufacture: z.number().nullable().optional(),
-      engineCapacity: z.number().nullable().optional(),
-      fuelType: z.string().nullable().optional(),
-      motStatus: z.string().nullable().optional(),
-      taxStatus: z.string().nullable().optional(),
-    })
-    .optional(),
+  vehicle: z.object({
+    registrationNumber: z.string().optional(),
+    make: z.string().nullable().optional(),
+    model: z.string().nullable().optional(),
+    colour: z.string().nullable().optional(),
+    yearOfManufacture: z.number().nullable().optional(),
+    engineCapacity: z.number().nullable().optional(),
+    fuelType: z.string().nullable().optional(),
+    motStatus: z.string().nullable().optional(),
+    taxStatus: z.string().nullable().optional(),
+  }).optional(),
 });
 
-// ГЛАВНА NEXT.JS ФУНКЦИЈА ЗА POST БАРАЊА
 export async function POST(request) {
+  let body;
   try {
-    const body = await request.json();
+    body = await request.json();
+    console.log("Request received:", body.name ? `Form submission: ${body.name}` : `Vehicle lookup: ${body.registrationNumber}`);
+  } catch (err) {
+    return NextResponse.json({ ok: false, error: "Invalid JSON" }, { status: 400 });
+  }
 
-    if (body.name !== undefined) {
-      const parsed = submitSchema.safeParse(body);
-      if (!parsed.success) {
-        return NextResponse.json({ ok: false, error: "Invalid form data." }, { status: 400 });
-      }
-
-      const data = parsed.data;
-      const reg = data.registrationNumber.toUpperCase();
-      const v = data.vehicle ?? {};
-      
-      const vehicleLines = [
-        v.make && `Make: ${v.make}`,
-        v.model && `Model: ${v.model}`,
-        v.yearOfManufacture && `Year: ${v.yearOfManufacture}`,
-        v.colour && `Colour: ${v.colour}`,
-        v.engineCapacity && `Engine: ${v.engineCapacity}cc`,
-        v.fuelType && `Fuel: ${v.fuelType}`,
-        v.motStatus && `MOT: ${v.motStatus}`,
-        v.taxStatus && `Tax: ${v.taxStatus}`,
-      ]
-        .filter(Boolean)
-        .join("\n");
-
-      const bodyText =
-        `New quote request from MotoBuy\n\n` +
-        `--- Contact ---\n` +
-        `Name: ${data.name}\n` +
-        `Email: ${data.email}\n` +
-        `Phone: ${data.phone}\n` +
-        `Postcode: ${data.postcode}\n\n` +
-        `--- Motorcycle ---\n` +
-        `Registration: ${reg}\n` +
-        `Mileage: ${data.mileage}\n` +
-        `Condition: ${data.condition}\n` +
-        (vehicleLines ? `\n${vehicleLines}\n` : "") +
-        (data.notes ? `\n--- Notes ---\n${data.notes}\n` : "");
-
-      const res = await fetch(
-        `${process.env.SUPABASE_URL}/functions/v1/send-transactional-email`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            apikey: process.env.SUPABASE_PUBLISHABLE_KEY ?? "",
-            Authorization: `Bearer ${process.env.SUPABASE_PUBLISHABLE_KEY ?? ""}`,
-          },
-          body: JSON.stringify({
-            templateName: "quote-request",
-            recipientEmail: "julijana3uneva@gmail.com",
-            idempotencyKey: `${reg}-${data.email}-${Date.now()}`,
-            templateData: {
-              name: data.name,
-              email: data.email,
-              phone: data.phone,
-              postcode: data.postcode,
-              registration: reg,
-              mileage: data.mileage,
-              condition: data.condition,
-              notes: data.notes,
-              vehicleLines,
-              bodyText: bodyText,
-            },
-          }),
-        }
-      );
-
-      if (!res.ok) {
-        const txt = await res.text().catch(() => "");
-        console.error("Email send failed", res.status, txt);
-        return NextResponse.json({ ok: true, queued: false });
-      }
-
-      return NextResponse.json({ ok: true, queued: true });
+  // Vehicle lookup
+  if (body.registrationNumber && !body.name) {
+    const parsed = lookupSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ ok: false, error: "Invalid registration format." }, { status: 400 });
     }
 
-    // ВТОРА АКЦИЈА: Ако нема име, тогаш само се ПРЕБАРАУВА ВОЗИЛО (DVLA Lookup)
-    else {
-      const parsed = lookupSchema.safeParse(body);
-      if (!parsed.success) {
-        return NextResponse.json({ ok: false, error: "Invalid registration format." }, { status: 400 });
-      }
+    const { registrationNumber } = parsed.data;
+    const apiKey = process.env.DVLA_API_KEY;
+    
+    if (!apiKey) {
+      return NextResponse.json({ ok: false, error: "Vehicle lookup is not configured." }, { status: 500 });
+    }
 
-      const { registrationNumber } = parsed.data;
-      const apiKey = process.env.DVLA_API_KEY;
-      
-      if (!apiKey) {
-        return NextResponse.json({ ok: false, error: "Vehicle lookup is not configured." }, { status: 500 });
-      }
-
+    try {
       const res = await fetch(
         "https://driver-vehicle-licensing.api.gov.uk/vehicle-enquiry/v1/vehicles",
         {
@@ -160,23 +88,87 @@ export async function POST(request) {
           yearOfManufacture: v.yearOfManufacture ?? null,
           engineCapacity: v.engineCapacity ?? null,
           fuelType: v.fuelType ?? null,
-          co2Emissions: v.co2Emissions ?? null,
           taxStatus: v.taxStatus ?? null,
-          taxDueDate: v.taxDueDate ?? null,
           motStatus: v.motStatus ?? null,
-          motExpiryDate: v.motExpiryDate ?? null,
-          markedForExport: v.markedForExport ?? null,
-          monthOfFirstRegistration: v.monthOfFirstRegistration ?? null,
-          dateOfLastV5CIssued: v.dateOfLastV5CIssued ?? null,
-          wheelplan: v.wheelplan ?? null,
-          typeApproval: v.typeApproval ?? null,
-          revenueWeight: v.revenueWeight ?? null,
         },
       });
+    } catch (err) {
+      console.error("DVLA API error:", err);
+      return NextResponse.json({ ok: false, error: "Vehicle lookup failed." }, { status: 500 });
+    }
+  }
+
+  // Form submission (send email)
+  if (body.name) {
+    const parsed = submitSchema.safeParse(body);
+    if (!parsed.success) {
+      console.log("Validation failed:", parsed.error.errors);
+      return NextResponse.json({ ok: false, error: "Invalid form data." }, { status: 400 });
     }
 
-  } catch (err) {
-    console.error("API Error:", err);
-    return NextResponse.json({ ok: false, error: "Server error occurred." }, { status: 500 });
+    const data = parsed.data;
+    const reg = data.registrationNumber.toUpperCase();
+    const v = data.vehicle ?? {};
+    
+    console.log("Preparing to send email to company...");
+
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    
+    try {
+      // Send email to company
+      const { data: emailData, error: emailError } = await resend.emails.send({
+        from: 'MotoBuy <noreply@cashforbikes.co.uk>',
+        // to: ['julijana3uneva@gmail.com'],
+        to: ['jian.lu.ou@gmail.com'],
+        subject: `[New Quote] ${data.name} - ${reg}`,
+        replyTo: data.email,
+        html: `
+          <h2>New Quote Request</h2>
+          <p><strong>Name:</strong> ${data.name}</p>
+          <p><strong>Phone:</strong> ${data.phone}</p>
+          <p><strong>Email:</strong> ${data.email}</p>
+          <p><strong>Postcode:</strong> ${data.postcode}</p>
+          <p><strong>Registration:</strong> ${reg}</p>
+          <p><strong>Mileage:</strong> ${data.mileage}</p>
+          <p><strong>Condition:</strong> ${data.condition}</p>
+          ${data.notes ? `<p><strong>Notes:</strong> ${data.notes}</p>` : ''}
+          ${v.make ? `<p><strong>Make:</strong> ${v.make}</p>` : ''}
+          ${v.model ? `<p><strong>Model:</strong> ${v.model}</p>` : ''}
+          ${v.yearOfManufacture ? `<p><strong>Year:</strong> ${v.yearOfManufacture}</p>` : ''}
+          ${v.colour ? `<p><strong>Colour:</strong> ${v.colour}</p>` : ''}
+          ${v.engineCapacity ? `<p><strong>Engine:</strong> ${v.engineCapacity}cc</p>` : ''}
+        `,
+      });
+
+      if (emailError) {
+        console.error("Email sending failed:", emailError);
+        return NextResponse.json({ ok: false, error: "Failed to send email" }, { status: 500 });
+      }
+
+      console.log("Email sent successfully:", emailData);
+      
+      // Optional: Send confirmation email to customer (don't await, avoid timeout)
+      resend.emails.send({
+        from: 'MotoBuy <noreply@cashforbikes.co.uk>', // Use the same verified domain
+        to: [data.email],
+        subject: 'MotoBuy - We received your quote request',
+        html: `
+          <h2>Thank you for contacting MotoBuy!</h2>
+          <p>We have received your quote request for vehicle <strong>${reg}</strong>.</p>
+          <p>Our team will contact you within <strong>30 minutes</strong> with the best price for your motorcycle.</p>
+          <p>If you have any questions, please call us: <strong>0800 123 4567</strong></p>
+          <hr />
+          <p style="color: #666; font-size: 12px;">MotoBuy Team</p>
+        `,
+      }).catch(e => console.error("Customer confirmation email failed:", e));
+
+      return NextResponse.json({ ok: true, queued: true });
+
+    } catch (err) {
+      console.error("Email sending error:", err);
+      return NextResponse.json({ ok: false, error: err.message }, { status: 500 });
+    }
   }
+
+  return NextResponse.json({ ok: false, error: "Invalid request" }, { status: 400 });
 }
