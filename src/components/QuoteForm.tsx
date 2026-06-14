@@ -4,11 +4,12 @@ import { useState } from "react";
 import { ArrowRight, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 // import { lookupVehicle, submitQuote } from "@/app/api/quote/route.js";
 
+
 type Vehicle = {
   registrationNumber: string;
   make: string | null;
   model: string | null;
-  color: string | null;
+  colour: string | null;
   yearOfManufacture: number | null;
   engineCapacity: number | null;
   fuelType: string | null;
@@ -25,8 +26,8 @@ const CONDITIONS = [
 ] as const;
 
 export function QuoteForm({ compact = false }: { compact?: boolean }) {
-//   const lookupFn = useServerFn(lookupVehicle);
-//   const submitFn = useServerFn(submitQuote);
+  //   const lookupFn = useServerFn(lookupVehicle);
+  //   const submitFn = useServerFn(submitQuote);
 
   const [reg, setReg] = useState("");
   const [vehicle, setVehicle] = useState<Vehicle | null>(null);
@@ -45,7 +46,8 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
   const [submitted, setSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
- async function handleLookup() {
+
+  async function handleLookup() {
     setLookupError(null);
     setVehicle(null);
     if (!reg.trim()) return;
@@ -57,7 +59,7 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ registrationNumber: reg }),
       });
-      
+
       const res = await response.json();
       if (res.ok) setVehicle(res.vehicle);
       else setLookupError(res.error || "Lookup failed. Please try again.");
@@ -68,39 +70,40 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
     }
   }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setSubmitError(null);
-    if (!condition) {
-      setSubmitError("Please select the bike's condition.");
-      return;
-    }
-    setSubmitting(true);
-    try {
-      // ПОПРАВЕНО: Наместо submitQuote(...), и тука правиме fetch до истото API
-      const response = await fetch("/api/quote", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          email,
-          phone,
-          postcode,
-          registrationNumber: reg,
-          mileage,
-          condition,
-          notes,
-          vehicle: vehicle ?? undefined,
-        }),
-      });
+    async function handleSubmit(e: React.FormEvent) {
+     e.preventDefault();
+     setSubmitError(null);
+     if (!condition) {
+       setSubmitError("Please select the bike's condition.");
+       return;
+     }
+     setSubmitting(true);
+     try {
+       // ПОПРАВЕНО: Наместо submitQuote(...), и тука правиме fetch до истото API
+       const response = await fetch("/api/quote", {
+         method: "POST",
+         headers: { "Content-Type": "application/json" },
+         body: JSON.stringify({
+           name,
+           email,
+           phone,
+           postcode,
+           registrationNumber: reg,
+           mileage,
+           condition,
+           notes,
+           vehicle: vehicle ?? undefined,
+         }),
+       });
 
-      const res = await response.json();
-      if (res.ok) setSubmitted(true);
-      else setSubmitError(res.error || "Something went wrong. Please try again.");
-    } catch {
-      setSubmitError("Something went wrong. Please try again.");
-    } finally {
-      setSubmitting(false);
+        const res = await response.json();
+        if (res.ok) setSubmitted(true);
+        else setSubmitError(res.error || "Something went wrong. Please try again.");
+      } catch {
+        setSubmitError("Something went wrong. Please try again.");
+      } finally {
+        setSubmitting(false);
+      }
     }
   }
 
@@ -137,7 +140,11 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
             <input
               required
               value={reg}
-              onChange={(e) => setReg(e.target.value.toUpperCase())}
+              onChange={(e) => {
+                setReg(e.target.value.toUpperCase());
+                setVehicle(null);  // 👈 车牌号改变时清空车辆信息
+                setLookupError(null);  // 同时清空错误信息
+              }}
               placeholder="AB12 CDE"
               className="min-w-0 flex-1 rounded-md border border-input bg-background px-2 py-3 text-center font-display text-lg uppercase tracking-widest placeholder:text-muted-foreground/60 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30 sm:px-4 sm:text-2xl"
             />
@@ -168,7 +175,7 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
               {vehicle.yearOfManufacture && (
                 <Row label="Year" value={String(vehicle.yearOfManufacture)} />
               )}
-              {vehicle.color && <Row label="Colour" value={vehicle.color} />}
+              {vehicle.colour && <Row label="Colour" value={vehicle.colour} />}
               {vehicle.engineCapacity && (
                 <Row label="Engine" value={`${vehicle.engineCapacity}cc`} />
               )}
