@@ -104,18 +104,18 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
     }
   }
 
-  if (submitted) {
-    return (
-      <div className="rounded-2xl border border-primary/40 bg-primary/10 p-6 text-center">
-        <CheckCircle2 className="mx-auto h-10 w-10 text-primary" />
-        <h3 className="mt-3 font-display text-2xl text-primary">We have got your details!</h3>
-        <p className="mt-2 text-sm text-muted-foreground">
-          One of our buyers will contact you as soon as possible with a free, no-obligation
-          quote.
-        </p>
-      </div>
-    );
-  }
+  // if (submitted) {
+  //   return (
+  //     <div className="rounded-2xl border border-primary/40 bg-primary/10 p-6 text-center">
+  //       <CheckCircle2 className="mx-auto h-10 w-10 text-primary" />
+  //       <h3 className="mt-3 font-display text-2xl text-primary">We have got your details!</h3>
+  //       <p className="mt-2 text-sm text-muted-foreground">
+  //         One of our buyers will contact you as soon as possible with a free, no-obligation
+  //         quote.
+  //       </p>
+  //     </div>
+  //   );
+  // }
 
   if (submitted) {
     return (
