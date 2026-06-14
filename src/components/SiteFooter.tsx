@@ -1,15 +1,16 @@
 import Link from "next/link";
-import { Phone, Mail, MapPin } from "lucide-react";
+import { Mail, MapPin } from "lucide-react";
 
 export function SiteFooter() {
   return (
     <footer className="border-t border-border/60 bg-card">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 md:grid-cols-4 md:px-8">
         <div>
-          <div className="flex items-center gap-2 font-display text-2xl tracking-wider">
-            <span>MOTO</span>
-            <span className="rounded bg-primary px-2 py-0.5 text-primary-foreground">BUY</span>
-          </div>
+          <Link href="/" className="flex items-center font-sans font-black text-xl uppercase tracking-tight gap-1">
+  <span className="text-foreground">CASH</span>
+  <span className="bg-primary text-primary-foreground px-1.5 py-0.5 text-base rounded font-black tracking-normal">FOR</span>
+  <span className="text-foreground">BIKES</span>
+</Link>
           <p className="mt-4 text-sm text-muted-foreground">
             We buy any motorbike across the UK. Fast, fair, free same-day collection.
           </p>
@@ -40,14 +41,13 @@ export function SiteFooter() {
         <div>
           <h4 className="mb-4 text-sm uppercase tracking-widest text-primary">Contact</h4>
           <ul className="space-y-3 text-sm text-muted-foreground">
-            <li className="flex items-start gap-2"><Phone className="mt-0.5 h-4 w-4 text-primary" /><span>0800 123 4567</span></li>
-            <li className="flex items-start gap-2"><Mail className="mt-0.5 h-4 w-4 text-primary" /><span>hello@motobuy.co.uk</span></li>
+            <li className="flex items-start gap-2"><Mail className="mt-0.5 h-4 w-4 text-primary" /><span>Urbanmoto18.gmail.com</span></li>
             <li className="flex items-start gap-2"><MapPin className="mt-0.5 h-4 w-4 text-primary" /><span>Nationwide collection, UK</span></li>
           </ul>
         </div>
       </div>
       <div className="border-t border-border/60 py-6 text-center text-xs text-muted-foreground">
-        <span>© {new Date().getFullYear()} MotoBuy. All rights reserved.</span>
+        <span>© {new Date().getFullYear()} Cash<span className="text-primary">For</span>Bikes. All rights reserved.</span>
       </div>
     </footer>
   );
