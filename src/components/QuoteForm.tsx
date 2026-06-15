@@ -105,7 +105,7 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
         setSubmitting(false);
       }
     }
-  }
+  
 
   if (submitted) {
     return (
