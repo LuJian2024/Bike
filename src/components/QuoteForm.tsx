@@ -142,8 +142,8 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
               value={reg}
               onChange={(e) => {
                 setReg(e.target.value.toUpperCase());
-                setVehicle(null);  // 👈 车牌号改变时清空车辆信息
-                setLookupError(null);  // 同时清空错误信息
+                setVehicle(null);  
+                setLookupError(null);  
               }}
               placeholder="AB12 CDE"
               className="min-w-0 flex-1 rounded-md border border-input bg-background px-2 py-3 text-center font-display text-lg uppercase tracking-widest placeholder:text-muted-foreground/60 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30 sm:px-4 sm:text-2xl"
