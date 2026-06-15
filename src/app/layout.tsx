@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Cash for for Bikes",
+  title: "Cash for Bikes",
   description: "Sell Your Motorbike for Cash",
  icons: {
     icon: [
