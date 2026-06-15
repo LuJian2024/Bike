@@ -56,11 +56,11 @@ function Home() {
               <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
               UK Nationwide · Same-Day Collection
             </div>
-            <h1 className="mt-6 font-display text-6xl leading-none tracking-tight md:text-8xl">
+            <h1 className="mt-6 break-words font-display text-5xl leading-none tracking-tight sm:text-6xl md:text-8xl">
               We Buy <br />
               <span className="text-gradient-blue">Any Motorbike.</span>
             </h1>
-            <p className="mt-6 max-w-lg text-lg text-muted-foreground">
+            <p className="mt-6 max-w-lg text-base text-muted-foreground sm:text-lg">
               The fastest way to turn your bike into cash. Damaged, non-runner, MOT failed
               or just unwanted — we pay the most, and we collect for free.
             </p>

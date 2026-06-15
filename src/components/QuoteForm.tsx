@@ -105,10 +105,11 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
         setSubmitting(false);
       }
     }
+  
 
   if (submitted) {
     return (
-      <div className="rounded-2xl border border-primary/40 bg-primary/10 p-6 text-center">
+      <div className="rounded-2xl border border-primary/40 bg-primary/10 p-4 text-center sm:p-6">
         <CheckCircle2 className="mx-auto h-10 w-10 text-primary" />
         <h3 className="mt-3 font-display text-2xl text-primary">We have got your details!</h3>
         <p className="mt-2 text-sm text-muted-foreground">
@@ -122,7 +123,7 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className={`rounded-2xl border border-border bg-card p-6 shadow-card ${compact ? "" : "md:p-8"}`}
+      className={`rounded-2xl border border-border bg-card p-4 shadow-card sm:p-6 ${compact ? "" : "md:p-8"}`}
     >
       <h3 className="font-display text-2xl tracking-wide">Get Your Free Quote</h3>
       <p className="mt-1 text-sm text-muted-foreground">
@@ -145,13 +146,13 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
                 setLookupError(null);  // 同时清空错误信息
               }}
               placeholder="AB12 CDE"
-              className="flex-1 rounded-md border border-input bg-background px-4 py-3 text-center font-display text-2xl uppercase tracking-widest placeholder:text-muted-foreground/60 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className="min-w-0 flex-1 rounded-md border border-input bg-background px-2 py-3 text-center font-display text-lg uppercase tracking-widest placeholder:text-muted-foreground/60 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30 sm:px-4 sm:text-2xl"
             />
             <button
               type="button"
               onClick={handleLookup}
               disabled={lookupLoading || !reg.trim()}
-              className="rounded-md bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-all hover:shadow-glow disabled:opacity-50"
+              className="shrink-0 rounded-md bg-primary px-3 py-3 text-xs font-semibold text-primary-foreground transition-all hover:shadow-glow disabled:opacity-50 sm:px-4 sm:text-sm"
             >
               {lookupLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Look up"}
             </button>
