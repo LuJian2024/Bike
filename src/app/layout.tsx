@@ -18,8 +18,8 @@ export const metadata: Metadata = {
  icons: {
     icon: [
       {
-        url: "/favicon-removebg.png?v=2", 
-        href: "/favicon-removebg.png?v=2",
+        url: "/image.png?v=2", 
+        href: "/image.png?v=2",
         sizes: "32x32", 
         type: "image/png",
       }
