@@ -156,7 +156,7 @@ export async function POST(request) {
     try {
       // Send email to company
       const { data: emailData, error: emailError } = await resend.emails.send({
-        from: 'MotoBuy <noreply@cashforbikes.co.uk>',
+        from: 'CashForBikes <noreply@cashforbikes.co.uk>',
         // to: ['julijana3uneva@gmail.com'],
         //from: 'MotoBuy <onboarding@resend.dev>',
         to: ['jian.lu.ou@gmail.com'],
@@ -188,20 +188,19 @@ export async function POST(request) {
       console.log("Email sent successfully:", emailData);
 
       // Optional: Send confirmation email to customer (don't await, avoid timeout)
-      resend.emails.send({
-        from: 'MotoBuy <noreply@cashforbikes.co.uk>', // Use the same verified domain
+      await resend.emails.send({
+        from: 'CashForBikes <noreply@cashforbikes.co.uk>', // Use the same verified domain
         to: [data.email],
-        subject: 'MotoBuy - We received your quote request',
+        subject: 'CashForBikes - We received your quote request',
         html: `
-          <h2>Thank you for contacting MotoBuy!</h2>
+          <h2>Thank you for contacting CashForBikes!</h2>
           <p>We have received your quote request for vehicle <strong>${reg}</strong>.</p>
           <p>Our team will contact you within <strong>30 minutes</strong> with the best price for your motorcycle.</p>
           <p>If you have any questions, please call us: <strong>0800 123 4567</strong></p>
           <hr />
-          <p style="color: #666; font-size: 12px;">MotoBuy Team</p>
+          <p style="color: #666; font-size: 12px;">CashForBikes Team</p>
         `,
-      }).catch(e => console.error("Customer confirmation email failed:", e));
-
+      });
       return NextResponse.json({ ok: true, queued: true });
 
     } catch (err) {
