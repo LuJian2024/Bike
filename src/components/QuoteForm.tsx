@@ -1,9 +1,6 @@
 "use client";
 import { useState } from "react";
-// import { useServerFn } from "@tanstack/react-start";
 import { ArrowRight, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
-// import { lookupVehicle, submitQuote } from "@/app/api/quote/route.js";
-
 
 type Vehicle = {
   registrationNumber: string;
@@ -53,7 +50,6 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
     if (!reg.trim()) return;
     setLookupLoading(true);
     try {
-      // ПОПРАВЕНО: Наместо lookupVehicle(...), правиме чист fetch до нашето API
       const response = await fetch("/api/quote", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -79,7 +75,6 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
      }
      setSubmitting(true);
      try {
-       // ПОПРАВЕНО: Наместо submitQuote(...), и тука правиме fetch до истото API
        const response = await fetch("/api/quote", {
          method: "POST",
          headers: { "Content-Type": "application/json" },

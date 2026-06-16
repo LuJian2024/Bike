@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Cash for Bikes",
-  description: "Sell Your Motorbike for Cash",
+  title: "Sell My Bike | Cash for Bikes UK · Same Day Collection",
+  description: "Looking to sell your motorbike quickly? We buy any motorbike for cash in the UK. Get a free valuation and free same-day collection today!",
  icons: {
     icon: [
       {
