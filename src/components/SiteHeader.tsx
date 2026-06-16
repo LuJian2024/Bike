@@ -29,7 +29,7 @@ export function SiteHeader() {
             <Link
               key={n.to}
               href={n.to}
-              {`text-sm font-medium uppercase tracking-wide transition-colors hover:text-primary ${usePathname() === n.to ? "text-primary font-bold" : "text-muted-foreground"}`}
+              className={`text-sm font-medium uppercase tracking-wide transition-colors hover:text-primary ${usePathname() === n.to ? "text-primary font-bold" : "text-muted-foreground"}`}
               // className="text-sm font-medium uppercase tracking-wide text-muted-foreground transition-colors hover:text-primary"
             >
               {n.label}
