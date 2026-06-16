@@ -4,10 +4,10 @@ import { ShieldCheck, Users, Award, MapPin } from "lucide-react";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "About MotoBuy — UK's Trusted Motorbike Buyer",
-  description: "MotoBuy is the UK's leading buyer of used and damaged motorbikes. Family-run, DVLA registered, paying the best prices nationwide.",
+  title: "About CashForBikes — UK's Trusted Motorbike Buyer",
+  description: "CashForBikes is the UK's leading buyer of used and damaged motorbikes. Family-run, DVLA registered, paying the best prices nationwide.",
   openGraph: {
-    title: "About MotoBuy",
+    title: "About CashForBikes",
     description: "Family-run, DVLA registered, paying the best prices nationwide.",
   },
 };
@@ -25,7 +25,7 @@ export default function AboutPage() {
             Riders Buying <span className="text-gradient-blue">From Riders.</span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-muted-foreground">
-            MotoBuy was founded by lifelong bikers who got tired of seeing mates ripped off when
+            Cash For Bikes was founded by lifelong bikers who got tired of seeing mates ripped off when
             selling their bikes. We pay fair, honest prices for every motorbike — running or not.
           </p>
         </div>
@@ -51,7 +51,7 @@ export default function AboutPage() {
           <div>
             <h2 className="font-display text-4xl tracking-wide md:text-5xl">Our Story</h2>
             <p className="mt-4 text-muted-foreground">
-              MotoBuy started in a garage in 2015 with one ex-courier, one old Transit, and a
+              Cash For Bikes started in a garage in 2015 with one ex-courier, one old Transit, and a
               stubborn belief that selling a motorbike should not be painful.
             </p>
             <p className="mt-4 text-muted-foreground">
