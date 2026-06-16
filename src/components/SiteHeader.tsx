@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu, X, ClipboardCheck } from "lucide-react";
 import { useState } from "react";
 
@@ -28,8 +29,8 @@ export function SiteHeader() {
             <Link
               key={n.to}
               href={n.to}
-              className="text-sm font-medium uppercase tracking-wide text-muted-foreground transition-colors hover:text-primary"
-              // activeProps={{ className: "text-primary" }}
+              className={`text-sm font-medium uppercase tracking-wide transition-colors hover:text-primary ${usePathname() === n.to ? "text-primary font-bold" : "text-muted-foreground"}`}
+              // className="text-sm font-medium uppercase tracking-wide text-muted-foreground transition-colors hover:text-primary"
             >
               {n.label}
             </Link>
@@ -61,8 +62,8 @@ export function SiteHeader() {
                 key={n.to}
                 href={n.to}
                 onClick={() => setOpen(false)}
-                className="py-3 text-sm font-medium uppercase tracking-wide text-muted-foreground"
-                // activeProps={{ className: "text-primary" }}
+                // className="py-3 text-sm font-medium uppercase tracking-wide text-muted-foreground"
+                className={`py-3 text-sm font-medium uppercase tracking-wide transition-colors hover:text-primary ${usePathname() === n.to ? "text-primary font-bold" : "text-muted-foreground"}`}
               >
                 {n.label}
               </Link>

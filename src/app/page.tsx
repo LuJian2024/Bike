@@ -38,11 +38,11 @@ function Home() {
 
       <section className="relative overflow-hidden">
         <Image
-  src={heroImg}
-  alt="Close-up of a rusty vintage motorcycle engine with chrome exhaust"
-  fill
-  priority
-  className="absolute inset-0 h-full w-full object-cover opacity-60"
+          src={heroImg}
+          alt="Close-up of a rusty vintage motorcycle engine with chrome exhaust"
+          fill
+          priority
+          className="absolute inset-0 h-full w-full object-cover opacity-60"
 />
         <div
           className="absolute inset-0"
@@ -185,12 +185,6 @@ function Home() {
             >
               <ClipboardCheck className="h-4 w-4" /> Get a Free Quote
             </Link>
-            {/* <Link
-              href="/contact"
-              className="inline-flex items-center gap-2 rounded-md border border-border bg-card px-6 py-3 font-medium transition-colors hover:border-primary"
-            >
-              Get a quote online
-            </Link> */}
           </div>
         </div>
       </section>
