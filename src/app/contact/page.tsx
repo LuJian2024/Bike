@@ -7,10 +7,10 @@ import { Phone, Mail, Clock, MapPin, MessageSquare } from "lucide-react";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Contact MotoBuy — Get a Free Motorbike Quote",
-  description: "Get in touch with MotoBuy for a free, no-obligation motorbike valuation. Call, email or use our online quote form — we respond fast.",
+  title: "Contact CashForBikes — Get a Free Motorbike Quote",
+  description: "Get in touch with Cash For Bikes for a free, no-obligation motorbike valuation. Call, email or use our online quote form — we respond fast.",
   openGraph: {
-    title: "Contact MotoBuy",
+    title: "Contact CashForBikes",
     description: "Get a free motorbike quote today.",
   },
 };

@@ -158,7 +158,7 @@ export async function POST(request) {
       const { data: emailData, error: emailError } = await resend.emails.send({
         from: 'CashForBikes <noreply@cashforbikes.co.uk>',
         // to: ['julijana3uneva@gmail.com'],
-        //from: 'MotoBuy <onboarding@resend.dev>',
+        //from: 'CashForBikes <onboarding@resend.dev>',
         to: ['jian.lu.ou@gmail.com'],
         subject: `[New Quote] ${data.name} - ${reg}`,
         replyTo: data.email,

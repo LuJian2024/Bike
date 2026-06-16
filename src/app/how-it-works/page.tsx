@@ -5,10 +5,10 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "How It Works — Sell Your Motorbike in 3 Steps | MotoBuy",
-  description: "Selling your motorbike with MotoBuy takes minutes. Get a quote, accept the offer, and we collect — same day, for free, anywhere in the UK.",
+  title: "How It Works — Sell Your Motorbike in 3 Steps | CashForBikes",
+  description: "Selling your motorbike with Cash For Bikes takes minutes. Get a quote, accept the offer, and we collect — same day, for free, anywhere in the UK.",
   openGraph: {
-    title: "How It Works | MotoBuy",
+    title: "How It Works | CashForBikes",
     description: "Sell your motorbike in three quick steps.",
   },
 };
