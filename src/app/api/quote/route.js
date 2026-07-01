@@ -159,7 +159,8 @@ export async function POST(request) {
         from: 'CashForBikes <noreply@cashforbikes.co.uk>',
         // to: ['julijana3uneva@gmail.com'],
         //from: 'CashForBikes <onboarding@resend.dev>',
-        to: ['jian.lu.ou@gmail.com'],
+        // to: ['jian.lu.ou@gmail.com'],
+        to: ['Urbanmoto18.gmail.com'],
         subject: `[New Quote] ${data.name} - ${reg}`,
         replyTo: data.email,
         html: `
