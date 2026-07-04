@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { Resend } from 'resend';
 
+const MAX_IMAGES = 3;
+const MAX_IMAGE_BYTES = 1.5 * 1024 * 1024; // 3MB po slika
+
 const lookupSchema = z.object({
   registrationNumber: z
     .string()
@@ -9,6 +12,7 @@ const lookupSchema = z.object({
     .max(10)
     .transform((v) => v.replace(/\s+/g, "").toUpperCase()),
 });
+
 
 const submitSchema = z.object({
   name: z.string().trim().min(1).max(80),
@@ -30,16 +34,82 @@ const submitSchema = z.object({
     motStatus: z.string().nullable().optional(),
     taxStatus: z.string().nullable().optional(),
   }).optional(),
+  // changed
+    images: z.array(z.string()).optional(),
+
 });
 
+// export async function POST(request) {
+//   let body;
+//   try {
+//     body = await request.json();
+//     console.log("Request received:", body.name ? `Form submission: ${body.name}` : `Vehicle lookup: ${body.registrationNumber}`);
+//   } catch (err) {
+//     return NextResponse.json({ ok: false, error: "Invalid JSON" }, { status: 400 });
+//   }
+
+// changed
 export async function POST(request) {
   let body;
+  let attachments = []; // NEW: slikite gi polnime tuka ako ima multipart
+
+  const contentType = request.headers.get("content-type") || "";
+
   try {
-    body = await request.json();
-    console.log("Request received:", body.name ? `Form submission: ${body.name}` : `Vehicle lookup: ${body.registrationNumber}`);
+    if (contentType.includes("multipart/form-data")) {
+      // NEW: multipart branch — form submission SO sliki
+      const form = await request.formData();
+      body = {
+        name: form.get("name"),
+        email: form.get("email"),
+        phone: form.get("phone"),
+        postcode: form.get("postcode"),
+        registrationNumber: form.get("registrationNumber"),
+        mileage: form.get("mileage"),
+        condition: form.get("condition"),
+        notes: form.get("notes") || "",
+        vehicle: form.get("vehicle") ? JSON.parse(form.get("vehicle")) : undefined,
+      };
+
+     const files = form.getAll("images")
+  .filter((f) => f && typeof f === "object" && "arrayBuffer" in f)
+  .slice(0, MAX_IMAGES);
+
+for (const [i, file] of files.entries()) {
+  if (file.size > MAX_IMAGE_BYTES) continue;
+
+  const buf = Buffer.from(await file.arrayBuffer());
+
+  const ext = (file.name || "").split('.').pop()?.toLowerCase();
+  const contentTypeMap = {
+    'jpg': 'image/jpeg',
+    'jpeg': 'image/jpeg',
+    'png': 'image/png',
+    'webp': 'image/webp',
+    'gif': 'image/gif',
+    'pdf': 'application/pdf',
+  };
+  const contentType = file.type || contentTypeMap[ext] || 'application/octet-stream';
+
+  attachments.push({
+    filename: (file.name || `photo-${i + 1}.jpg`).replace(/[^a-z0-9._-]/gi, "_"),
+    content: buf.toString("base64"),
+    contentType,
+  });
+}
+
+console.log(`Multipart form: ${body.name}, ${attachments.length} image(s)`);
+
+    } else {
+      // Postoen JSON branch — vehicle lookup ILI form bez sliki
+      body = await request.json();
+      console.log("Request received:", body.name ? `Form submission: ${body.name}` : `Vehicle lookup: ${body.registrationNumber}`);
+    }
   } catch (err) {
-    return NextResponse.json({ ok: false, error: "Invalid JSON" }, { status: 400 });
+    return NextResponse.json({ ok: false, error: "Invalid request body" }, { status: 400 });
   }
+
+// end changed
 
   // Vehicle lookup
   if (body.registrationNumber && !body.name) {
@@ -155,12 +225,22 @@ export async function POST(request) {
 
     try {
       // Send email to company
+        console.log('📤 SENDING company email. Attachments count:', attachments.length);
+  if (attachments.length > 0) {
+    console.log('📎 First attachment sample:', {
+      filename: attachments[0].filename,
+      contentType: attachments[0].contentType,
+      hasContent: !!attachments[0].content,
+      contentLength: attachments[0].content?.length,
+    });
+  }
+  // end changed 
       const { data: emailData, error: emailError } = await resend.emails.send({
         from: 'CashForBikes <noreply@cashforbikes.co.uk>',
-        // to: ['julijana3uneva@gmail.com'],
+      to: ['julijana3uneva@gmail.com'],
         //from: 'CashForBikes <onboarding@resend.dev>',
         // to: ['jian.lu.ou@gmail.com'],
-        to: ['Urbanmoto18@gmail.com'],
+        // to: ['Urbanmoto18@gmail.com'],
         subject: `[New Quote] ${data.name} - ${reg}`,
         replyTo: data.email,
         html: `
@@ -178,17 +258,22 @@ export async function POST(request) {
           ${v.yearOfManufacture ? `<p><strong>Year:</strong> ${v.yearOfManufacture}</p>` : ''}
           ${v.colour ? `<p><strong>Colour:</strong> ${v.colour}</p>` : ''}
           ${v.engineCapacity ? `<p><strong>Engine:</strong> ${v.engineCapacity}cc</p>` : ''}
-        `,
-      });
+        ${attachments.length > 0 ? `<p><i>${attachments.length} photo(s) attached.</i></p>` : ''}
+      `,
+      ...(attachments.length > 0 ? { attachments } : {}),
+    });
+ // 🔍 LOG 2 — што вратил Resend
+  console.log('📨 RESEND response data:', emailData);
+  console.log('❌ RESEND response error:', emailError);
 
-      if (emailError) {
-        console.error("Email sending failed:", emailError);
-        return NextResponse.json({ ok: false, error: "Failed to send email" }, { status: 500 });
-      }
+  if (emailError) {
+    console.error('Email sending failed FULL:', JSON.stringify(emailError, null, 2));
+    return NextResponse.json({ ok: false, error: emailError.message || 'Failed' }, { status: 500 });
+  }
 
-      console.log("Email sent successfully:", emailData);
-
-      // Optional: Send confirmation email to customer (don't await, avoid timeout)
+  console.log('✅ Company email sent, id:', emailData?.id);
+  // end changed
+   
       await resend.emails.send({
         from: 'CashForBikes <noreply@cashforbikes.co.uk>', // Use the same verified domain
         to: [data.email],

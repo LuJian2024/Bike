@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { ArrowRight, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import { ArrowRight, Loader2, CheckCircle2, AlertCircle, ImagePlus, X } from "lucide-react";
 
 type Vehicle = {
   registrationNumber: string;
@@ -22,10 +22,10 @@ const CONDITIONS = [
   "Heavily damaged / Non-runner",
 ] as const;
 
-export function QuoteForm({ compact = false }: { compact?: boolean }) {
-  //   const lookupFn = useServerFn(lookupVehicle);
-  //   const submitFn = useServerFn(submitQuote);
+const MAX_IMAGES = 3;
+const MAX_IMAGE_BYTES = 1.5 * 1024 * 1024; // 
 
+export function QuoteForm({ compact = false }: { compact?: boolean }) {
   const [reg, setReg] = useState("");
   const [vehicle, setVehicle] = useState<Vehicle | null>(null);
   const [lookupLoading, setLookupLoading] = useState(false);
@@ -39,10 +39,13 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
   const [condition, setCondition] = useState<(typeof CONDITIONS)[number] | "">("");
   const [notes, setNotes] = useState("");
 
+  // NEW: слики
+  const [images, setImages] = useState<File[]>([]);
+  const [imageError, setImageError] = useState<string | null>(null);
+
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
-
 
   async function handleLookup() {
     setLookupError(null);
@@ -55,7 +58,6 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ registrationNumber: reg }),
       });
-
       const res = await response.json();
       if (res.ok) setVehicle(res.vehicle);
       else setLookupError(res.error || "Lookup failed. Please try again.");
@@ -66,41 +68,86 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
     }
   }
 
-    async function handleSubmit(e: React.FormEvent) {
-     e.preventDefault();
-     setSubmitError(null);
-     if (!condition) {
-       setSubmitError("Please select the bike's condition.");
-       return;
-     }
-     setSubmitting(true);
-     try {
-       const response = await fetch("/api/quote", {
-         method: "POST",
-         headers: { "Content-Type": "application/json" },
-         body: JSON.stringify({
-           name,
-           email,
-           phone,
-           postcode,
-           registrationNumber: reg,
-           mileage,
-           condition,
-           notes,
-           vehicle: vehicle ?? undefined,
-         }),
-       });
-
-        const res = await response.json();
-        if (res.ok) setSubmitted(true);
-        else setSubmitError(res.error || "Something went wrong. Please try again.");
-      } catch {
-        setSubmitError("Something went wrong. Please try again.");
-      } finally {
-        setSubmitting(false);
+  // NEW: додади слики со валидација
+  function handleFiles(files: FileList | null) {
+    if (!files || files.length === 0) return;
+    setImageError(null);
+    const remaining = MAX_IMAGES - images.length;
+    const incoming = Array.from(files).slice(0, remaining);
+    const accepted: File[] = [];
+    let tooBig = false;
+    for (const f of incoming) {
+      if (!f.type.startsWith("image/")) continue;
+      if (f.size > MAX_IMAGE_BYTES) {
+        tooBig = true;
+        continue;
       }
+      accepted.push(f);
     }
-  
+    setImages((prev) => [...prev, ...accepted].slice(0, MAX_IMAGES));
+    if (tooBig) setImageError("Some photos exceed 3MB and were skipped.");
+    else if (files.length > remaining)
+      setImageError(`You can upload up to ${MAX_IMAGES} photos.`);
+  }
+
+  function removeImage(idx: number) {
+    setImages((prev) => prev.filter((_, i) => i !== idx));
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setSubmitError(null);
+    if (!condition) {
+      setSubmitError("Please select the bike's condition.");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      let response: Response;
+
+      if (images.length > 0) {
+        // NEW: multipart кога има слики
+        const fd = new FormData();
+        fd.append("name", name);
+        fd.append("email", email);
+        fd.append("phone", phone);
+        fd.append("postcode", postcode);
+        fd.append("registrationNumber", reg);
+        fd.append("mileage", mileage);
+        fd.append("condition", condition);
+        fd.append("notes", notes);
+        if (vehicle) fd.append("vehicle", JSON.stringify(vehicle));
+        images.forEach((f) => fd.append("images", f));
+        // ⚠️ НЕ сетирај Content-Type — browser-от сам го прави со boundary
+        response = await fetch("/api/quote", { method: "POST", body: fd });
+      } else {
+        // Постоен JSON pat — без сликi
+        response = await fetch("/api/quote", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name,
+            email,
+            phone,
+            postcode,
+            registrationNumber: reg,
+            mileage,
+            condition,
+            notes,
+            vehicle: vehicle ?? undefined,
+          }),
+        });
+      }
+
+      const res = await response.json();
+      if (res.ok) setSubmitted(true);
+      else setSubmitError(res.error || "Something went wrong. Please try again.");
+    } catch {
+      setSubmitError("Something went wrong. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   if (submitted) {
     return (
@@ -108,8 +155,7 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
         <CheckCircle2 className="mx-auto h-10 w-10 text-primary" />
         <h3 className="mt-3 font-display text-2xl text-primary">We have got your details!</h3>
         <p className="mt-2 text-sm text-muted-foreground">
-          One of our buyers will contact you as soon as possible with a free, no-obligation
-          quote.
+          One of our buyers will contact you as soon as possible with a free, no-obligation quote.
         </p>
       </div>
     );
@@ -137,8 +183,8 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
               value={reg}
               onChange={(e) => {
                 setReg(e.target.value.toUpperCase());
-                setVehicle(null);  
-                setLookupError(null);  
+                setVehicle(null);
+                setLookupError(null);
               }}
               placeholder="AB12 CDE"
               className="min-w-0 flex-1 rounded-md border border-input bg-background px-2 py-3 text-center font-display text-lg uppercase tracking-widest placeholder:text-muted-foreground/60 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30 sm:px-4 sm:text-2xl"
@@ -159,7 +205,6 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
           )}
         </div>
 
-        {/* Vehicle details card */}
         {vehicle && (
           <div className="rounded-md border border-primary/30 bg-primary/5 p-4">
             <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-primary">
@@ -201,9 +246,7 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
             >
               <option value="">Select…</option>
               {CONDITIONS.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
+                <option key={c} value={c}>{c}</option>
               ))}
             </select>
           </div>
@@ -211,20 +254,8 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
 
         <div className="grid gap-3 md:grid-cols-2">
           <Field label="Your name *" required value={name} onChange={setName} />
-          <Field
-            label="Phone *"
-            required
-            type="tel"
-            value={phone}
-            onChange={setPhone}
-          />
-          <Field
-            label="Email *"
-            required
-            type="email"
-            value={email}
-            onChange={setEmail}
-          />
+          <Field label="Phone *" required type="tel" value={phone} onChange={setPhone} />
+          <Field label="Email *" required type="email" value={email} onChange={setEmail} />
           <Field label="Postcode *" required value={postcode} onChange={setPostcode} />
         </div>
 
@@ -241,6 +272,68 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
           />
         </div>
 
+        {/* NEW: Слики (optional, до 5, max 3MB секоја) */}
+        <div>
+          <label className="mb-1 block text-xs font-medium uppercase tracking-wider text-muted-foreground">
+            Photos (optional — up to {MAX_IMAGES}, max 3MB each)
+          </label>
+
+          {images.length > 0 && (
+            <div className="mb-2 grid grid-cols-3 gap-2 sm:grid-cols-5">
+              {images.map((file, idx) => {
+                const url = URL.createObjectURL(file);
+                return (
+                  <div
+                    key={idx}
+                    className="group relative aspect-square overflow-hidden rounded-md border border-border bg-background"
+                  >
+                    <img
+                      src={url}
+                      alt={file.name}
+                      className="h-full w-full object-cover"
+                      onLoad={() => URL.revokeObjectURL(url)}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(idx)}
+                      className="absolute right-1 top-1 rounded-full bg-background/80 p-1 text-foreground opacity-0 transition-opacity group-hover:opacity-100 hover:bg-destructive hover:text-destructive-foreground"
+                      aria-label="Remove photo"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                    <span className="absolute bottom-0 left-0 right-0 bg-background/70 px-1 py-0.5 text-[10px] text-muted-foreground">
+                      {Math.round(file.size / 1024)} KB
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {images.length < MAX_IMAGES && (
+            <label className="flex cursor-pointer items-center justify-center gap-2 rounded-md border border-dashed border-input bg-background px-4 py-3 text-sm text-muted-foreground hover:border-primary hover:text-primary">
+              <ImagePlus className="h-4 w-4" />
+              <span>Add photos of your bike</span>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={(e) => {
+                  handleFiles(e.target.files);
+                  e.target.value = "";
+                }}
+              />
+            </label>
+          )}
+
+          {imageError && (
+            <p className="mt-2 flex items-center gap-1.5 text-xs text-destructive">
+              <AlertCircle className="h-3.5 w-3.5" /> {imageError}
+            </p>
+          )}
+        </div>
+
         {submitError && (
           <p className="flex items-center gap-1.5 text-xs text-destructive">
             <AlertCircle className="h-3.5 w-3.5" /> {submitError}
@@ -253,14 +346,9 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
           className="group flex w-full items-center justify-center gap-2 rounded-md bg-primary px-6 py-3 font-semibold text-primary-foreground transition-all hover:shadow-glow disabled:opacity-60"
         >
           {submitting ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" /> Sending…
-            </>
+            <><Loader2 className="h-4 w-4 animate-spin" /> Sending…</>
           ) : (
-            <>
-              Get My Quote
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-            </>
+            <>Get My Quote <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></>
           )}
         </button>
 
@@ -282,12 +370,7 @@ function Row({ label, value }: { label: string; value: string }) {
 }
 
 function Field({
-  label,
-  value,
-  onChange,
-  required,
-  type = "text",
-  placeholder,
+  label, value, onChange, required, type = "text", placeholder,
 }: {
   label: string;
   value: string;
@@ -312,3 +395,4 @@ function Field({
     </div>
   );
 }
+
