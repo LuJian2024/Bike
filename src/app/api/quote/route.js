@@ -237,10 +237,10 @@ console.log(`Multipart form: ${body.name}, ${attachments.length} image(s)`);
   // end changed 
       const { data: emailData, error: emailError } = await resend.emails.send({
         from: 'CashForBikes <noreply@cashforbikes.co.uk>',
-      to: ['julijana3uneva@gmail.com'],
+      // to: ['julijana3uneva@gmail.com'],
         //from: 'CashForBikes <onboarding@resend.dev>',
         // to: ['jian.lu.ou@gmail.com'],
-        // to: ['Urbanmoto18@gmail.com'],
+        to: ['Urbanmoto18@gmail.com'],
         subject: `[New Quote] ${data.name} - ${reg}`,
         replyTo: data.email,
         html: `
