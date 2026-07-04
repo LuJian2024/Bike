@@ -275,7 +275,7 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
         {/* NEW: Слики (optional, до 5, max 3MB секоја) */}
         <div>
           <label className="mb-1 block text-xs font-medium uppercase tracking-wider text-muted-foreground">
-            Photos (optional — up to {MAX_IMAGES}, max 3MB each)
+            Photos (optional — up to {MAX_IMAGES}, max 1.5MB each)
           </label>
 
           {images.length > 0 && (
