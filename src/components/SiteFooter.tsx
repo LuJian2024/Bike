@@ -41,7 +41,7 @@ export function SiteFooter() {
         <div>
           <h4 className="mb-4 text-sm uppercase tracking-widest text-primary">Contact</h4>
           <ul className="space-y-3 text-sm text-muted-foreground">
-            <li className="flex items-start gap-2"><Mail className="mt-0.5 h-4 w-4 text-primary" /><span>Urbanmoto18.gmail.com</span></li>
+            <li className="flex items-start gap-2"><Mail className="mt-0.5 h-4 w-4 text-primary" /><span>Urbanmoto18@gmail.com</span></li>
             <li className="flex items-start gap-2"><MapPin className="mt-0.5 h-4 w-4 text-primary" /><span>Nationwide collection, UK</span></li>
           </ul>
         </div>
