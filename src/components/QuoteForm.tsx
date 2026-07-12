@@ -38,6 +38,7 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
   const [phone, setPhone] = useState("");
   const [postcode, setPostcode] = useState("");
   const [mileage, setMileage] = useState("");
+  const [model, setModel] = useState("");
   const [condition, setCondition] = useState<(typeof CONDITIONS)[number] | "">("");
   const [notes, setNotes] = useState("");
 
@@ -110,6 +111,7 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
       if (images.length > 0) {
         // NEW: multipart кога има слики
         const fd = new FormData();
+        fd.append("model", model);
         fd.append("name", name);
         fd.append("email", email);
         fd.append("phone", phone);
@@ -128,6 +130,7 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
+            model,
             name,
             email,
             phone,
@@ -228,7 +231,12 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
             </div>
           </div>
         )}
-
+        <Field
+          label="Model (optional)"
+          value={model}
+          onChange={setModel}
+          placeholder="e.g. CBF125, GSX-R1000, Street Triple"
+        />
         <div className="grid gap-3 md:grid-cols-2">
           <Field
             label="Mileage *"
@@ -398,4 +406,3 @@ function Field({
     </div>
   );
 }
-
