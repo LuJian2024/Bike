@@ -15,6 +15,7 @@ const lookupSchema = z.object({
 
 
 const submitSchema = z.object({
+  model: z.string().trim().optional().nullable(),
   name: z.string().trim().min(1).max(80),
   email: z.string().trim().email().max(160),
   phone: z.string().trim().min(1).max(30),
@@ -61,13 +62,14 @@ export async function POST(request) {
       // NEW: multipart branch — form submission SO sliki
       const form = await request.formData();
       body = {
+        model: form.get("model"),
         name: form.get("name"),
         email: form.get("email"),
         phone: form.get("phone"),
         postcode: form.get("postcode"),
         registrationNumber: form.get("registrationNumber"),
         mileage: form.get("mileage"),
-        condition: form.get("condition"),
+        condition: form.get("condition"),        
         notes: form.get("notes") || "",
         vehicle: form.get("vehicle") ? JSON.parse(form.get("vehicle")) : undefined,
       };
@@ -240,14 +242,15 @@ console.log(`Multipart form: ${body.name}, ${attachments.length} image(s)`);
   // end changed 
       const { data: emailData, error: emailError } = await resend.emails.send({
         from: 'CashForBikes <noreply@cashforbikes.co.uk>',
-      // to: ['julijana3uneva@gmail.com'],
+      //  to: ['julijana3uneva@gmail.com'],
         //from: 'CashForBikes <onboarding@resend.dev>',
         // to: ['jian.lu.ou@gmail.com'],
-         to: ['Urbanmoto18@gmail.com'],
+        to: ['Urbanmoto18@gmail.com'],
         subject: `[New Quote] ${data.name} - ${reg}`,
         replyTo: data.email,
         html: `
           <h2>New Quote Request</h2>
+          <p><strong>Model:</strong> ${data.model}</p>
           <p><strong>Name:</strong> ${data.name}</p>
           <p><strong>Phone:</strong> ${data.phone}</p>
           <p><strong>Email:</strong> ${data.email}</p>
