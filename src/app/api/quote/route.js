@@ -33,6 +33,7 @@ const submitSchema = z.object({
     fuelType: z.string().nullable().optional(),
     motStatus: z.string().nullable().optional(),
     taxStatus: z.string().nullable().optional(),
+    monthOfFirstRegistration: z.string().nullable().optional(), dateOfLastV5CIssued: z.string().nullable().optional(),
   }).optional(),
   // changed
     images: z.array(z.string()).optional(),
@@ -160,6 +161,7 @@ console.log(`Multipart form: ${body.name}, ${attachments.length} image(s)`);
           fuelType: v.fuelType ?? null,
           taxStatus: v.taxStatus ?? null,
           motStatus: v.motStatus ?? null,
+          monthOfFirstRegistration: v.monthOfFirstRegistration ?? null, dateOfLastV5CIssued: v.dateOfLastV5CIssued ?? null,
         },
       });
     } catch (err) {
@@ -209,6 +211,7 @@ console.log(`Multipart form: ${body.name}, ${attachments.length} image(s)`);
             fuelType: v.fuelType ?? null,
             taxStatus: v.taxStatus ?? null,
             motStatus: v.motStatus ?? null,
+            monthOfFirstRegistration: v.monthOfFirstRegistration ?? null, dateOfLastV5CIssued: v.dateOfLastV5CIssued ?? null,
           };
           console.log("后端自动获取成功");
         }
@@ -240,7 +243,7 @@ console.log(`Multipart form: ${body.name}, ${attachments.length} image(s)`);
       // to: ['julijana3uneva@gmail.com'],
         //from: 'CashForBikes <onboarding@resend.dev>',
         // to: ['jian.lu.ou@gmail.com'],
-        to: ['Urbanmoto18@gmail.com'],
+         to: ['Urbanmoto18@gmail.com'],
         subject: `[New Quote] ${data.name} - ${reg}`,
         replyTo: data.email,
         html: `
@@ -258,6 +261,9 @@ console.log(`Multipart form: ${body.name}, ${attachments.length} image(s)`);
           ${v.yearOfManufacture ? `<p><strong>Year:</strong> ${v.yearOfManufacture}</p>` : ''}
           ${v.colour ? `<p><strong>Colour:</strong> ${v.colour}</p>` : ''}
           ${v.engineCapacity ? `<p><strong>Engine:</strong> ${v.engineCapacity}cc</p>` : ''}
+          ${v.monthOfFirstRegistration ? `<p><strong>First Registration:</strong> ${v.monthOfFirstRegistration}</p>` : ''}
+
+${v.dateOfLastV5CIssued ? `<p><strong>Last V5C Issued:</strong> ${v.dateOfLastV5CIssued}</p>` : ''}
         ${attachments.length > 0 ? `<p><i>${attachments.length} photo(s) attached.</i></p>` : ''}
       `,
       ...(attachments.length > 0 ? { attachments } : {}),

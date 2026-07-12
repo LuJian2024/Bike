@@ -12,6 +12,8 @@ type Vehicle = {
   fuelType: string | null;
   motStatus: string | null;
   taxStatus: string | null;
+  monthOfFirstRegistration: string | null; 
+  dateOfLastV5CIssued: string | null;
 };
 
 const CONDITIONS = [
@@ -222,6 +224,7 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
               {vehicle.fuelType && <Row label="Fuel" value={vehicle.fuelType} />}
               {vehicle.motStatus && <Row label="MOT" value={vehicle.motStatus} />}
               {vehicle.taxStatus && <Row label="Tax" value={vehicle.taxStatus} />}
+              {vehicle.monthOfFirstRegistration && ( <Row label="First Registration" value={vehicle.monthOfFirstRegistration} /> )} {vehicle.dateOfLastV5CIssued && ( <Row label="Last V5C Issued" value={vehicle.dateOfLastV5CIssued} /> )}
             </div>
           </div>
         )}
