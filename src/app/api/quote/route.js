@@ -1,21 +1,16 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { Resend } from 'resend';
+import { Resend } from "resend";
 
-const MAX_IMAGES = 3;
-const MAX_IMAGE_BYTES = 1.5 * 1024 * 1024; // 3MB po slika
+const MAX_IMAGES = 10;
 
 const lookupSchema = z.object({
-  registrationNumber: z
-    .string()
-    .min(1)
-    .max(10)
+  registrationNumber: z.string().min(1).max(10)
     .transform((v) => v.replace(/\s+/g, "").toUpperCase()),
 });
 
-
 const submitSchema = z.object({
-  model: z.string().trim().optional().nullable(),
+  model: z.string().trim().max(80).optional().nullable(),
   name: z.string().trim().min(1).max(80),
   email: z.string().trim().email().max(160),
   phone: z.string().trim().min(1).max(30),
@@ -34,123 +29,54 @@ const submitSchema = z.object({
     fuelType: z.string().nullable().optional(),
     motStatus: z.string().nullable().optional(),
     taxStatus: z.string().nullable().optional(),
-    monthOfFirstRegistration: z.string().nullable().optional(), dateOfLastV5CIssued: z.string().nullable().optional(),
+    monthOfFirstRegistration: z.string().nullable().optional(),
+    dateOfLastV5CIssued: z.string().nullable().optional(),
   }).optional(),
-  // changed
-    images: z.array(z.string()).optional(),
-
+  images: z.array(z.object({
+    name: z.string().max(120),
+    dataUrl: z.string().max(3_000_000),
+  })).max(MAX_IMAGES).optional().default([]),
 });
 
-// export async function POST(request) {
-//   let body;
-//   try {
-//     body = await request.json();
-//     console.log("Request received:", body.name ? `Form submission: ${body.name}` : `Vehicle lookup: ${body.registrationNumber}`);
-//   } catch (err) {
-//     return NextResponse.json({ ok: false, error: "Invalid JSON" }, { status: 400 });
-//   }
-
-// changed
-export async function POST(request) {
-  let body;
-  let attachments = []; // NEW: slikite gi polnime tuka ako ima multipart
-
-  const contentType = request.headers.get("content-type") || "";
-
-  try {
-    if (contentType.includes("multipart/form-data")) {
-      // NEW: multipart branch — form submission SO sliki
-      const form = await request.formData();
-      body = {
-        model: form.get("model"),
-        name: form.get("name"),
-        email: form.get("email"),
-        phone: form.get("phone"),
-        postcode: form.get("postcode"),
-        registrationNumber: form.get("registrationNumber"),
-        mileage: form.get("mileage"),
-        condition: form.get("condition"),        
-        notes: form.get("notes") || "",
-        vehicle: form.get("vehicle") ? JSON.parse(form.get("vehicle")) : undefined,
-      };
-
-     const files = form.getAll("images")
-  .filter((f) => f && typeof f === "object" && "arrayBuffer" in f)
-  .slice(0, MAX_IMAGES);
-
-for (const [i, file] of files.entries()) {
-  if (file.size > MAX_IMAGE_BYTES) continue;
-
-  const buf = Buffer.from(await file.arrayBuffer());
-
-  const ext = (file.name || "").split('.').pop()?.toLowerCase();
-  const contentTypeMap = {
-    'jpg': 'image/jpeg',
-    'jpeg': 'image/jpeg',
-    'png': 'image/png',
-    'webp': 'image/webp',
-    'gif': 'image/gif',
-    'pdf': 'application/pdf',
-  };
-  const contentType = file.type || contentTypeMap[ext] || 'application/octet-stream';
-
-  attachments.push({
-    filename: (file.name || `photo-${i + 1}.jpg`).replace(/[^a-z0-9._-]/gi, "_"),
-    content: buf.toString("base64"),
-    contentType,
-  });
+function esc(s = "") {
+  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
-console.log(`Multipart form: ${body.name}, ${attachments.length} image(s)`);
-
-    } else {
-      // Postoen JSON branch — vehicle lookup ILI form bez sliki
-      body = await request.json();
-      console.log("Request received:", body.name ? `Form submission: ${body.name}` : `Vehicle lookup: ${body.registrationNumber}`);
-    }
-  } catch (err) {
-    return NextResponse.json({ ok: false, error: "Invalid request body" }, { status: 400 });
+export async function POST(request) {
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ ok: false, error: "Invalid JSON" }, { status: 400 });
   }
 
-// end changed
-
-  // Vehicle lookup
+  // --- Vehicle lookup ---
   if (body.registrationNumber && !body.name) {
     const parsed = lookupSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json({ ok: false, error: "Invalid registration format." }, { status: 400 });
     }
-
     const { registrationNumber } = parsed.data;
     const apiKey = process.env.DVLA_API_KEY;
-
     if (!apiKey) {
       return NextResponse.json({ ok: false, error: "Vehicle lookup is not configured." }, { status: 500 });
     }
-
     try {
       const res = await fetch(
         "https://driver-vehicle-licensing.api.gov.uk/vehicle-enquiry/v1/vehicles",
         {
           method: "POST",
-          headers: {
-            "x-api-key": apiKey,
-            "Content-Type": "application/json",
-          },
+          headers: { "x-api-key": apiKey, "Content-Type": "application/json" },
           body: JSON.stringify({ registrationNumber }),
         }
       );
-
       if (res.status === 404) {
         return NextResponse.json({ ok: false, error: "No vehicle found for that registration." }, { status: 404 });
       }
-
       if (!res.ok) {
         return NextResponse.json({ ok: false, error: "Vehicle lookup failed. Please try again." }, { status: res.status });
       }
-
       const v = await res.json();
-
       return NextResponse.json({
         ok: true,
         vehicle: {
@@ -163,7 +89,8 @@ console.log(`Multipart form: ${body.name}, ${attachments.length} image(s)`);
           fuelType: v.fuelType ?? null,
           taxStatus: v.taxStatus ?? null,
           motStatus: v.motStatus ?? null,
-          monthOfFirstRegistration: v.monthOfFirstRegistration ?? null, dateOfLastV5CIssued: v.dateOfLastV5CIssued ?? null,
+          monthOfFirstRegistration: v.monthOfFirstRegistration ?? null,
+          dateOfLastV5CIssued: v.dateOfLastV5CIssued ?? null,
         },
       });
     } catch (err) {
@@ -172,132 +99,88 @@ console.log(`Multipart form: ${body.name}, ${attachments.length} image(s)`);
     }
   }
 
-  // Form submission (send email)
+  // --- Form submission ---
   if (body.name) {
     const parsed = submitSchema.safeParse(body);
     if (!parsed.success) {
       console.log("Validation failed:", parsed.error.errors);
       return NextResponse.json({ ok: false, error: "Invalid form data." }, { status: 400 });
     }
-
     const data = parsed.data;
     const reg = data.registrationNumber.toUpperCase();
 
-    // 👇 新增：如果前端没有提供 vehicle 信息，后端自动获取
-    let vehicleData = data.vehicle;
-    console.log("前端有没有提供data.vehicle", vehicleData);
+    // Build attachments from base64 data URLs
+    const attachments = (data.images ?? []).map((img, i) => {
+      const match = img.dataUrl.match(/^data:(image\/[-+.\w]+);base64,(.+)$/);
+      const contentType = match?.[1] ?? "image/jpeg";
+      const base64 = match?.[2] ?? img.dataUrl.replace(/^data:[^,]+,/, "");
+      const filename = (img.name || `photo-${i + 1}.jpg`).replace(/[^a-z0-9._-]/gi, "_");
+      return { filename, content: base64, contentType };
+    });
 
-    if (!vehicleData && reg) {
-      console.log("后端自动获取车辆信息:", reg);
-      try {
-        const dvlaRes = await fetch(
-          "https://driver-vehicle-licensing.api.gov.uk/vehicle-enquiry/v1/vehicles",
-          {
-            method: "POST",
-            headers: {
-              "x-api-key": process.env.DVLA_API_KEY,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ registrationNumber: reg }),
-          }
-        );
-
-        if (dvlaRes.ok) {
-          const v = await dvlaRes.json();
-          vehicleData = {
-            make: v.make ?? null,
-            model: v.model ?? null,
-            colour: v.colour ?? null,
-            yearOfManufacture: v.yearOfManufacture ?? null,
-            engineCapacity: v.engineCapacity ?? null,
-            fuelType: v.fuelType ?? null,
-            taxStatus: v.taxStatus ?? null,
-            motStatus: v.motStatus ?? null,
-            monthOfFirstRegistration: v.monthOfFirstRegistration ?? null, dateOfLastV5CIssued: v.dateOfLastV5CIssued ?? null,
-          };
-          console.log("后端自动获取成功");
-        }
-      } catch (err) {
-        console.error("后端自动获取失败:", err);
-      }
-    }
-
-    const v = vehicleData ?? {};
-    console.log("v", v);
-    console.log("Preparing to send email to company...");
+    const v = data.vehicle ?? {};
+    const html = `
+      <h2>New Quote Request — Cash For Bikes</h2>
+      <h3>Contact</h3>
+      <p><b>Name:</b> ${esc(data.name)}<br>
+      <b>Phone:</b> ${esc(data.phone)}<br>
+      <b>Email:</b> ${esc(data.email)}<br>
+      <b>Postcode:</b> ${esc(data.postcode)}</p>
+      <h3>Motorcycle</h3>
+      <p><b>Registration:</b> ${esc(reg)}<br>
+      <b>Mileage:</b> ${esc(data.mileage)}<br>
+      ${data.model ? `<b>Model (user):</b> ${esc(data.model)}<br>` : ""}
+      <b>Condition:</b> ${esc(data.condition)}</p>
+      ${v.make || v.model || v.yearOfManufacture ? `
+        <h3>DVLA Details</h3>
+        <p>
+          ${v.make ? `<b>Make:</b> ${esc(v.make)}<br>` : ""}
+          ${v.model ? `<b>Model:</b> ${esc(v.model)}<br>` : ""}
+          ${v.yearOfManufacture ? `<b>Year:</b> ${v.yearOfManufacture}<br>` : ""}
+          ${v.colour ? `<b>Colour:</b> ${esc(v.colour)}<br>` : ""}
+          ${v.engineCapacity ? `<b>Engine:</b> ${v.engineCapacity}cc<br>` : ""}
+          ${v.fuelType ? `<b>Fuel:</b> ${esc(v.fuelType)}<br>` : ""}
+          ${v.motStatus ? `<b>MOT:</b> ${esc(v.motStatus)}<br>` : ""}
+          ${v.taxStatus ? `<b>Tax:</b> ${esc(v.taxStatus)}<br>` : ""}
+          ${v.monthOfFirstRegistration ? `<b>First Registration:</b> ${esc(v.monthOfFirstRegistration)}<br>` : ""}
+          ${v.dateOfLastV5CIssued ? `<b>Last V5C Issued:</b> ${esc(v.dateOfLastV5CIssued)}` : ""}
+        </p>` : ""}
+      ${data.notes ? `<h3>Notes</h3><p>${esc(data.notes)}</p>` : ""}
+      ${attachments.length ? `<p><i>${attachments.length} photo(s) attached.</i></p>` : ""}
+    `;
 
     const resend = new Resend(process.env.RESEND_API_KEY);
-
     try {
-      // Send email to company
-        console.log('📤 SENDING company email. Attachments count:', attachments.length);
-  if (attachments.length > 0) {
-    console.log('📎 First attachment sample:', {
-      filename: attachments[0].filename,
-      contentType: attachments[0].contentType,
-      hasContent: !!attachments[0].content,
-      contentLength: attachments[0].content?.length,
-    });
-  }
-  // end changed 
       const { data: emailData, error: emailError } = await resend.emails.send({
-        from: 'CashForBikes <noreply@cashforbikes.co.uk>',
-      //  to: ['julijana3uneva@gmail.com'],
-        //from: 'CashForBikes <onboarding@resend.dev>',
-        // to: ['jian.lu.ou@gmail.com'],
-        to: ['Urbanmoto18@gmail.com'],
-        subject: `[New Quote] ${data.name} - ${reg}`,
+        from: "CashForBikes <noreply@cashforbikes.co.uk>",
+        to: ["julijana3uneva@gmail.com"],
+        //  to: ['Urbanmoto18@gmail.com'],
         replyTo: data.email,
-        html: `
-          <h2>New Quote Request</h2>
-          <p><strong>Model:</strong> ${data.model}</p>
-          <p><strong>Name:</strong> ${data.name}</p>
-          <p><strong>Phone:</strong> ${data.phone}</p>
-          <p><strong>Email:</strong> ${data.email}</p>
-          <p><strong>Postcode:</strong> ${data.postcode}</p>
-          <p><strong>Registration:</strong> ${reg}</p>
-          <p><strong>Mileage:</strong> ${data.mileage}</p>
-          <p><strong>Condition:</strong> ${data.condition}</p>
-          ${data.notes ? `<p><strong>Notes:</strong> ${data.notes}</p>` : ''}
-          ${v.make ? `<p><strong>Make:</strong> ${v.make}</p>` : ''}
-          ${v.model ? `<p><strong>Model:</strong> ${v.model}</p>` : ''}
-          ${v.yearOfManufacture ? `<p><strong>Year:</strong> ${v.yearOfManufacture}</p>` : ''}
-          ${v.colour ? `<p><strong>Colour:</strong> ${v.colour}</p>` : ''}
-          ${v.engineCapacity ? `<p><strong>Engine:</strong> ${v.engineCapacity}cc</p>` : ''}
-          ${v.monthOfFirstRegistration ? `<p><strong>First Registration:</strong> ${v.monthOfFirstRegistration}</p>` : ''}
+        subject: `[New Quote] ${data.name} - ${reg}${attachments.length ? ` (${attachments.length} photo${attachments.length > 1 ? "s" : ""})` : ""}`,
+        html,
+        ...(attachments.length ? { attachments } : {}),
+      });
 
-${v.dateOfLastV5CIssued ? `<p><strong>Last V5C Issued:</strong> ${v.dateOfLastV5CIssued}</p>` : ''}
-        ${attachments.length > 0 ? `<p><i>${attachments.length} photo(s) attached.</i></p>` : ''}
-      `,
-      ...(attachments.length > 0 ? { attachments } : {}),
-    });
- // 🔍 LOG 2 — што вратил Resend
-  console.log('📨 RESEND response data:', emailData);
-  console.log('❌ RESEND response error:', emailError);
+      if (emailError) {
+        console.error("Resend error:", JSON.stringify(emailError, null, 2));
+        return NextResponse.json({ ok: false, error: emailError.message || "Failed" }, { status: 500 });
+      }
+      console.log("✅ Company email sent:", emailData?.id);
 
-  if (emailError) {
-    console.error('Email sending failed FULL:', JSON.stringify(emailError, null, 2));
-    return NextResponse.json({ ok: false, error: emailError.message || 'Failed' }, { status: 500 });
-  }
-
-  console.log('✅ Company email sent, id:', emailData?.id);
-  // end changed
-   
+      // Confirmation to customer
       await resend.emails.send({
-        from: 'CashForBikes <noreply@cashforbikes.co.uk>', // Use the same verified domain
+        from: "CashForBikes <noreply@cashforbikes.co.uk>",
         to: [data.email],
-        subject: 'CashForBikes - We received your quote request',
+        subject: "CashForBikes - We received your quote request",
         html: `
           <h2>Thank you for contacting CashForBikes!</h2>
-          <p>We have received your quote request for vehicle <strong>${reg}</strong>.</p>
-          <p>Our team will contact you within <strong>30 minutes</strong> with the best price for your motorcycle.</p>
-          <p>If you have any questions, please call us: <strong>0800 123 4567</strong></p>
-          <hr />
-          <p style="color: #666; font-size: 12px;">CashForBikes Team</p>
+          <p>We have received your quote request for vehicle <b>${esc(reg)}</b>.</p>
+          <p>Our team will contact you as soon as possible with a free, no-obligation quote.</p>
+          <p>— CashForBikes Team</p>
         `,
       });
-      return NextResponse.json({ ok: true, queued: true });
 
+      return NextResponse.json({ ok: true, queued: true });
     } catch (err) {
       console.error("Email sending error:", err);
       return NextResponse.json({ ok: false, error: err.message }, { status: 500 });
