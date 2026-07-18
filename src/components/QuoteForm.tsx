@@ -482,7 +482,10 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
         <button
           type="button"
           onClick={() => removeImage(idx)}
-          className="absolute right-1 top-1 rounded-full bg-background/80 p-1 text-foreground opacity-0 transition-opacity group-hover:opacity-100 hover:bg-destructive hover:text-destructive-foreground"
+          // className="absolute right-1 top-1 rounded-full bg-background/80 p-1 text-foreground opacity-0 transition-opacity group-hover:opacity-100 hover:bg-destructive hover:text-destructive-foreground"
+          //  className="absolute right-1 top-1 rounded-full bg-background/90 p-1 text-foreground opacity-100 transition-opacity hover:bg-destructive hover:text-destructive-foreground md:opacity-0 md:group-hover:opacity-100"
+          // x sekogas vidliv 
+          className="absolute right-1 top-1 rounded-full bg-background/90 p-1 text-foreground transition-colors hover:bg-destructive hover:text-destructive-foreground"
           aria-label="Remove photo"
         >
           <X className="h-3 w-3" />
