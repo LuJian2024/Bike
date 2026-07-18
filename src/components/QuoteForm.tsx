@@ -403,7 +403,7 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
               required
               value={condition}
               onChange={(e) => setCondition(e.target.value as (typeof CONDITIONS)[number])}
-              className="w-full rounded-md border border-input bg-background px-4 py-3 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className="w-full rounded-md border border-input bg-background px-4 py-3 text-sm focus:border-lime-500 focus:outline-none focus:ring-2 focus:ring-lime-500/30 text-white appearance-none"
             >
               <option value="">Select…</option>
               {CONDITIONS.map((c) => (
