@@ -500,7 +500,9 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
 
 
           {images.length < MAX_IMAGES && (
-            <label className="flex cursor-pointer items-center justify-center gap-2 rounded-md border border-dashed border-input bg-background px-4 py-3 text-sm text-muted-foreground hover:border-primary hover:text-primary">
+            // <label className="flex cursor-pointer items-center justify-center gap-2 rounded-md border border-dashed border-input bg-background px-4 py-3 text-sm text-muted-foreground hover:border-primary hover:text-primary">
+            <label className="
+flex cursor-pointer items-center justify-center gap-2 rounded-md border border-dashed border-primary/40 bg-primary/5 px-4 py-3 text-sm text-primary transition-colors hover:border-primary hover:bg-primary/10 ">
               <ImagePlus className="h-4 w-4" />
               <span>Add photos of your bike</span>
               <input
