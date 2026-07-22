@@ -20,8 +20,8 @@ export const metadata: Metadata = {
  icons: {
     icon: [
       {
-        url: "/canva-re.png?v=2", 
-        href: "/canva-re.png?v=2",
+        url: "/favi-neon.png?v=2", 
+        href: "/favi-neon.png?v=2",
       }
     ]
   },
