@@ -3,7 +3,7 @@ import Link from "next/link";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { QuoteForm } from "@/components/QuoteForm";
-import { Phone, Mail, Clock, MapPin, MessageSquare } from "lucide-react";
+import { Mail, Clock, MapPin, MessageSquare } from "lucide-react";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
