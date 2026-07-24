@@ -180,7 +180,7 @@ function Home() {
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Link
-              href="/contact"
+              href="#quote-form"
               className="inline-flex items-center gap-2 rounded-md bg-primary px-6 py-3 font-semibold text-primary-foreground transition-all hover:shadow-glow"
             >
               <ClipboardCheck className="h-4 w-4" /> Get a Free Quote
