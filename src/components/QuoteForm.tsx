@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useRef,useState } from "react";
 import { ArrowRight, Loader2, CheckCircle2, AlertCircle, ImagePlus, X } from "lucide-react";
 
 type Vehicle = {
@@ -112,15 +112,15 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
   const [notes, setNotes] = useState("");
 
   // NEW: слики
-  // const [images, setImages] = useState<File[]>([]);
-  // const [imageError, setImageError] = useState<string | null>(null);
-   const [images, setImages] = useState<UploadedImage[]>([]);
+  const [images, setImages] = useState<UploadedImage[]>([]);
   const [imageBusy, setImageBusy] = useState(false);
   const [imageError, setImageError] = useState<string | null>(null);
 
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const successRef = useRef<HTMLDivElement>(null);
 
   async function handleLookup() {
     setLookupError(null);
@@ -142,32 +142,6 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
       setLookupLoading(false);
     }
   }
-
-  // NEW: додади слики со валидација
-  // function handleFiles(files: FileList | null) {
-  //   if (!files || files.length === 0) return;
-  //   setImageError(null);
-  //   const remaining = MAX_IMAGES - images.length;
-  //   const incoming = Array.from(files).slice(0, remaining);
-  //   const accepted: File[] = [];
-  //   let tooBig = false;
-  //   for (const f of incoming) {
-  //     if (!f.type.startsWith("image/")) continue;
-  //     if (f.size > MAX_IMAGE_BYTES) {
-  //       tooBig = true;
-  //       continue;
-  //     }
-  //     accepted.push(f);
-  //   }
-  //   setImages((prev) => [...prev, ...accepted].slice(0, MAX_IMAGES));
-  //   if (tooBig) setImageError("Some photos exceed 3MB and were skipped.");
-  //   else if (files.length > remaining)
-  //     setImageError(`You can upload up to ${MAX_IMAGES} photos.`);
-  // }
-
-  // function removeImage(idx: number) {
-  //   setImages((prev) => prev.filter((_, i) => i !== idx));
-  // }
 
    async function handleFiles(files: FileList | null) {
     if (!files || files.length === 0) return;
@@ -211,67 +185,9 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
     }
   }
 
-
   function removeImage(idx: number) {
     setImages((prev) => prev.filter((_, i) => i !== idx));
   }
-
-  // async function handleSubmit(e: React.FormEvent) {
-  //   e.preventDefault();
-  //   setSubmitError(null);
-  //   if (!condition) {
-  //     setSubmitError("Please select the bike's condition.");
-  //     return;
-  //   }
-  //   setSubmitting(true);
-  //   try {
-  //     let response: Response;
-
-  //     if (images.length > 0) {
-  //       // NEW: multipart кога има слики
-  //       const fd = new FormData();
-  //       fd.append("model", model);
-  //       fd.append("name", name);
-  //       fd.append("email", email);
-  //       fd.append("phone", phone);
-  //       fd.append("postcode", postcode);
-  //       fd.append("registrationNumber", reg);
-  //       fd.append("mileage", mileage);
-  //       fd.append("condition", condition);
-  //       fd.append("notes", notes);
-  //       if (vehicle) fd.append("vehicle", JSON.stringify(vehicle));
-  //       images.forEach((f) => fd.append("images", f));
-  //       // ⚠️ НЕ сетирај Content-Type — browser-от сам го прави со boundary
-  //       response = await fetch("/api/quote", { method: "POST", body: fd });
-  //     } else {
-  //       // Постоен JSON pat — без сликi
-  //       response = await fetch("/api/quote", {
-  //         method: "POST",
-  //         headers: { "Content-Type": "application/json" },
-  //         body: JSON.stringify({
-  //           model,
-  //           name,
-  //           email,
-  //           phone,
-  //           postcode,
-  //           registrationNumber: reg,
-  //           mileage,
-  //           condition,
-  //           notes,
-  //           vehicle: vehicle ?? undefined,
-  //         }),
-  //       });
-  //     }
-
-  //     const res = await response.json();
-  //     if (res.ok) setSubmitted(true);
-  //     else setSubmitError(res.error || "Something went wrong. Please try again.");
-  //   } catch {
-  //     setSubmitError("Something went wrong. Please try again.");
-  //   } finally {
-  //     setSubmitting(false);
-  //   }
-  // }
 
   async function handleSubmit(e: React.FormEvent) {
   e.preventDefault();
@@ -294,7 +210,16 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
       }),
     });
     const res = await response.json();
-    if (res.ok) setSubmitted(true);
+    if (res.ok) {
+  setSubmitted(true);
+
+  requestAnimationFrame(() => {
+    successRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+  });
+}
     else setSubmitError(res.error || "Something went wrong. Please try again.");
   } catch {
     setSubmitError("Something went wrong. Please try again.");
@@ -303,10 +228,12 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
   }
 }
 
-
   if (submitted) {
     return (
-      <div className="rounded-2xl border border-primary/40 bg-primary/10 p-4 text-center sm:p-6">
+     <div
+  ref={successRef}
+  className="rounded-2xl border border-primary/40 bg-primary/10 p-4 text-center sm:p-6"
+>
         <CheckCircle2 className="mx-auto h-10 w-10 text-primary" />
         <h3 className="mt-3 font-display text-2xl text-primary">We have got your details!</h3>
         <p className="mt-2 text-sm text-muted-foreground">
@@ -348,7 +275,7 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
               type="button"
               onClick={handleLookup}
               disabled={lookupLoading || !reg.trim()}
-              className="shrink-0 rounded-md bg-primary px-3 py-3 text-xs font-semibold text-primary-foreground transition-all hover:shadow-glow disabled:opacity-50 sm:px-4 sm:text-sm"
+              className="group shrink-0 rounded-md bg-primary px-3 py-3 font-semibold text-primary-foreground transition-all hover:brightness-110 disabled:opacity-90 sm:px-4 sm:text-sm"
             >
               {lookupLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Look up"}
             </button>
@@ -439,37 +366,11 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
             Photos (optional — up to {MAX_IMAGES}, max 1.5MB each)
           </label>
 
-          {/* {images.length > 0 && (
-            <div className="mb-2 grid grid-cols-3 gap-2 sm:grid-cols-5">
-              {images.map((file, idx) => {
-                const url = URL.createObjectURL(file);
-                return (
-                  <div
-                    key={idx}
-                    className="group relative aspect-square overflow-hidden rounded-md border border-border bg-background"
-                  >
-                    <img
-                      src={url}
-                      alt={file.name}
-                      className="h-full w-full object-cover"
-                      onLoad={() => URL.revokeObjectURL(url)}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeImage(idx)}
-                      className="absolute right-1 top-1 rounded-full bg-background/80 p-1 text-foreground opacity-0 transition-opacity group-hover:opacity-100 hover:bg-destructive hover:text-destructive-foreground"
-                      aria-label="Remove photo"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                    <span className="absolute bottom-0 left-0 right-0 bg-background/70 px-1 py-0.5 text-[10px] text-muted-foreground">
-                      {Math.round(file.size / 1024)} KB
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          )} */}
+          {imageBusy && (
+  <p className="mb-2 text-xs text-muted-foreground">
+    Compressing photos...
+  </p>
+)}
 
           {images.length > 0 && (
   <div className="mb-2 grid grid-cols-3 gap-2 sm:grid-cols-5">
@@ -497,7 +398,6 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
     ))}
   </div>
 )}
-
 
           {images.length < MAX_IMAGES && (
             // <label className="flex cursor-pointer items-center justify-center gap-2 rounded-md border border-dashed border-input bg-background px-4 py-3 text-sm text-muted-foreground hover:border-primary hover:text-primary">

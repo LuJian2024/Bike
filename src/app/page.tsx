@@ -83,14 +83,14 @@ function Home() {
             </div>
 
             <div className="mt-10 grid grid-cols-3 gap-6 border-t border-border/60 pt-6">
-              <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
-                <ShieldCheck className="h-4 w-4 text-primary" /> DVLA Registered
+              <div className="flex items-center justify-center gap-1 text-xs uppercase tracking-wider text-muted-foreground">
+                <ShieldCheck className="h-5 w-5 shrink-0 text-primary" /> DVLA Registered
               </div>
-              <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
-                <Clock className="h-4 w-4 text-primary" /> Fast Payment
+              <div className="flex items-center justify-center gap-1 text-xs uppercase tracking-wider text-muted-foreground">
+                <Clock className="h-5 w-5 shrink-0 text-primary" /> Fast Payment
               </div>
-              <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
-                <Truck className="h-4 w-4 text-primary" /> Free Collection
+              <div className="flex items-center justify-center gap-1 text-xs uppercase tracking-wider text-muted-foreground">
+                <Truck className="h-5 w-5 shrink-0 text-primary" /> Free Collection
               </div>
             </div>
           </div>

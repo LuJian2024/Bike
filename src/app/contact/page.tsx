@@ -36,17 +36,18 @@ export default function ContactPage() {
       <section className="mx-auto grid max-w-7xl gap-12 px-4 py-20 md:grid-cols-2 md:px-8">
         <div className="space-y-6">
 
-          <a href="julijana3uneva@gmail.com" className="group flex items-start gap-5 rounded-2xl border border-border bg-card p-6 transition-all hover:border-primary/60">
+         <Link href="/" className="group flex items-start gap-5 rounded-2xl border border-border bg-card p-6 transition-all hover:border-primary/60">
             <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-all group-hover:bg-primary group-hover:text-primary-foreground">
               <Mail className="h-6 w-6" />
             </div>
+
             <div>
               <h3 className="font-display text-xl tracking-wide">Email</h3>
               <p className="mt-1 text-lg text-foreground">Urbanmoto18@gmail.com</p>
               <p className="mt-1 text-sm text-muted-foreground">Send photos of your bike — we will come back with a price.</p>
             </div>
-          </a>
-
+            </Link>
+          
                 <Link href="/" className="group flex items-start gap-5 rounded-2xl border border-border bg-card p-6 transition-all hover:border-primary/60">
             <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-all group-hover:bg-primary group-hover:text-primary-foreground">
               <MessageSquare className="h-6 w-6" />
