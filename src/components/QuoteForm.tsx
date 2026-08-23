@@ -443,6 +443,12 @@ flex cursor-pointer items-center justify-center gap-2 rounded-md border border-d
           )}
         </button>
 
+        <p className="mt-3 text-center text-xs text-neutral-400">
+          By submitting you agree we may contact you about your motorbike. See our{" "}
+         <a href="/privacy" className="underline">Privacy Policy</a>.
+      </p>
+
+
         <p className="text-center text-xs text-muted-foreground">
           We will contact you as soon as possible — usually within 30 minutes.
         </p>

@@ -24,6 +24,7 @@ export function SiteFooter() {
             <li><Link href="/how-it-works" className="hover:text-primary">How It Works</Link></li>
             <li><Link href="/faq" className="hover:text-primary">FAQ</Link></li>
             <li><Link href="/contact" className="hover:text-primary">Contact</Link></li>
+            <li><Link href="/privacy" className="hover:text-primary">Privacy Policy</Link></li>
           </ul>
         </div>
 

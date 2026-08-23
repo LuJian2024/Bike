@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Script from "next/script";
+import CookieBanner from "@/components/CookieBanner"; 
 
 
 const geistSans = Geist({
@@ -34,13 +35,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        {/* 2. Овде го вчитуваме главното Google Analytics срипта-фајл со твоето ID */}
+      {/* <head>
+        
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-MKY5R3KVQJ"
           strategy="afterInteractive"
         />
-        {/* 3. Овде ја извршуваме иницијализацијата за Analytics */}
+       
         <Script id="google-analytics" strategy="afterInteractive">
           {`
             window.dataLayer = window.dataLayer || [];
@@ -50,12 +51,34 @@ export default function RootLayout({
             gtag('config', 'G-MKY5R3KVQJ');
           `}
         </Script>
-      </head>
+      </head> */}
+      <head>
+  <Script id="ga-consent" strategy="beforeInteractive">
+    {`
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('consent','default',{ analytics_storage: 'denied' });
+      try {
+        if (localStorage.getItem('cookie-consent') === 'granted') {
+          gtag('consent','update',{ analytics_storage: 'granted' });
+        }
+      } catch(e){}
+    `}
+  </Script>
+  <Script src="https://www.googletagmanager.com/gtag/js?id=G-MKY5R3KVQJ" strategy="afterInteractive" />
+  <Script id="google-analytics" strategy="afterInteractive">
+    {`
+      gtag('js', new Date());
+      gtag('config', 'G-MKY5R3KVQJ', { anonymize_ip: true });
+    `}
+  </Script>
+</head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning
       >
         {children}
+         <CookieBanner />
       </body>
     </html>
   );
