@@ -1,10 +1,16 @@
+import { SiteHeader } from "../../components/SiteHeader"; 
+import { SiteFooter } from "../../components/SiteFooter";
+
 export const metadata = {
   title: "Privacy Policy | Cash For Bikes UK",
   description: "How Cash For Bikes collects and uses your personal data when you request a motorbike quote.",
 };
 
 export default function PrivacyPage() {
-  return (
+    return (
+    <div className="flex min-h-screen flex-col bg-background text-foreground">
+
+      <SiteHeader />
     <main className="mx-auto max-w-3xl px-4 py-16 text-neutral-200">
       <h1 className="mb-8 text-4xl font-bold">Privacy Policy</h1>
       <p className="mb-6 text-sm text-neutral-400">Last updated: {new Date().getFullYear()}</p>
@@ -46,5 +52,7 @@ export default function PrivacyPage() {
         </section>
       </div>
     </main>
+      <SiteFooter />
+    </div>
   );
 }
