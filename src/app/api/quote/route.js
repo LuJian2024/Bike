@@ -18,6 +18,8 @@ const submitSchema = z.object({
   registrationNumber: z.string().trim().min(1).max(10),
   mileage: z.string().trim().min(1).max(12),
   condition: z.enum(["Excellent", "Good", "Fair", "Poor", "Heavily damaged / Non-runner"]),
+  sellTiming: z.enum(["As soon as possible", "Within 1-2 weeks", "Within a month", "Just researching"]),
+  priceExpectation: z.string().trim().min(1).max(60).transform((v) => v.replace(/[^\d\s.,£kK-]/g, "").trim()),
   notes: z.string().trim().max(1000).optional().default(""),
   vehicle: z.object({
     registrationNumber: z.string().optional(),
@@ -130,7 +132,9 @@ export async function POST(request) {
       <p><b>Registration:</b> ${esc(reg)}<br>
       <b>Mileage:</b> ${esc(data.mileage)}<br>
       ${data.model ? `<b>Model (user):</b> ${esc(data.model)}<br>` : ""}
-      <b>Condition:</b> ${esc(data.condition)}</p>
+      <b>Condition:</b> ${esc(data.condition)} <br>
+      <b>Looking to sell:</b> ${esc(data.sellTiming)}<br>
+      <b>Price expectation:</b> ${esc(data.priceExpectation)}</p>
       ${v.make || v.model || v.yearOfManufacture ? `
         <h3>DVLA Details</h3>
         <p>
@@ -153,7 +157,7 @@ export async function POST(request) {
     try {
       const { data: emailData, error: emailError } = await resend.emails.send({
         from: "CashForBikes <noreply@cashforbikes.co.uk>",
-        //  to: ["julijana3uneva@gmail.com"],
+        // to: ["julijana3uneva@gmail.com"],
         to: ['Urbanmoto18@gmail.com'],
         replyTo: data.email,
         subject: `[New Quote] ${data.name} - ${reg}${attachments.length ? ` (${attachments.length} photo${attachments.length > 1 ? "s" : ""})` : ""}`,
