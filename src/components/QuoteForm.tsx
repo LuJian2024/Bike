@@ -24,6 +24,14 @@ const CONDITIONS = [
   "Heavily damaged / Non-runner",
 ] as const;
 
+const SELL_TIMINGS = [
+  "As soon as possible",
+  "Within 1-2 weeks",
+  "Within a month",
+  "Just researching",
+] as const;
+
+
 // CHANGED: image upload limits — allow up to 10 photos, auto-compressed client-side
 const MAX_IMAGES = 10;
 const MAX_DIMENSION = 1400; // px — resize longest side
@@ -111,6 +119,9 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
   const [condition, setCondition] = useState<(typeof CONDITIONS)[number] | "">("");
   const [notes, setNotes] = useState("");
 
+  const [sellTiming, setSellTiming] = useState<(typeof SELL_TIMINGS)[number] | "">("");
+  const [priceExpectation, setPriceExpectation] = useState("");
+
   // NEW: слики
   const [images, setImages] = useState<UploadedImage[]>([]);
   const [imageBusy, setImageBusy] = useState(false);
@@ -192,10 +203,20 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
   async function handleSubmit(e: React.FormEvent) {
   e.preventDefault();
   setSubmitError(null);
+
   if (!condition) {
     setSubmitError("Please select the bike's condition.");
     return;
   }
+  if (!sellTiming) {
+  setSubmitError("Please select when you're looking to sell.");
+  return;
+  }
+  if (!priceExpectation.trim()) {
+  setSubmitError("Please enter your price expectation.");
+  return;
+  }
+
   setSubmitting(true);
   try {
     const response = await fetch("/api/quote", {
@@ -204,6 +225,8 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
       body: JSON.stringify({
         model, name, email, phone, postcode,
         registrationNumber: reg,
+        sellTiming,
+        priceExpectation,
         mileage, condition, notes,
         vehicle: vehicle ?? undefined,
         images: images.map((img) => ({ name: img.name, dataUrl: img.dataUrl })),
@@ -237,7 +260,7 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
         <CheckCircle2 className="mx-auto h-10 w-10 text-primary" />
         <h3 className="mt-3 font-display text-2xl text-primary">We have got your details!</h3>
         <p className="mt-2 text-sm text-muted-foreground">
-          One of our buyers will contact you as soon as possible with a free, no-obligation quote.
+          Someone from our team will contact you as soon as possible with a free, no-obligation quote.
         </p>
       </div>
     );
@@ -339,6 +362,37 @@ export function QuoteForm({ compact = false }: { compact?: boolean }) {
             </select>
           </div>
         </div>
+
+       <div className="grid gap-3 md:grid-cols-2">
+  <div>
+    <label className="mb-1 block text-xs font-medium uppercase tracking-wider text-muted-foreground">
+      When are you looking to sell? *
+    </label>
+    <select
+      required
+      value={sellTiming}
+      onChange={(e) => setSellTiming(e.target.value as (typeof SELL_TIMINGS)[number])}
+      className="w-full rounded-md border border-input bg-background px-4 py-3 text-sm focus:border-lime-500 focus:outline-none focus:ring-2 focus:ring-lime-500/30 text-white appearance-none"
+    >
+      <option value="">Select…</option>
+      {SELL_TIMINGS.map((t) => (
+        <option key={t} value={t}>{t}</option>
+      ))}
+    </select>
+  </div>
+  <div>
+    <label className="mb-1 block text-xs font-medium uppercase tracking-wider text-muted-foreground">
+      How much are you looking for? *
+    </label>
+    <input
+      required
+      value={priceExpectation}
+      onChange={(e) => setPriceExpectation(e.target.value)}
+      placeholder="e.g. £2,500"
+      className="w-full rounded-md border border-input bg-background px-4 py-3 text-sm focus:border-lime-500 focus:outline-none focus:ring-2 focus:ring-lime-500/30 text-white"
+    />
+  </div>
+</div>
 
         <div className="grid gap-3 md:grid-cols-2">
           <Field label="Your name *" required value={name} onChange={setName} />
