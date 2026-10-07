@@ -50,7 +50,7 @@ export function SiteFooter() {
       <div className="border-t border-border/60 py-6 text-center text-xs text-muted-foreground">
         <span>© {new Date().getFullYear()} Cash<span className="text-primary">For</span>Bikes. All rights reserved.</span>
         <p className="mt-2 text-xs text-muted-foreground/80">
-          Cashforbikes is a trading name of UrbanMoto81 Ltd. Registered in England & Wales. Company No. [СТАВИ_БРОЈ].
+          Cashforbikes is a trading name of URBANMOTO81 Ltd. Registered in England & Wales. Company No. [16448909].
         </p>
       </div>
     </footer>
