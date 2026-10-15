@@ -1,14 +1,14 @@
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { ShieldCheck, Users, Award, MapPin } from "lucide-react";
+import { Users, Award, MapPin } from "lucide-react";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "About CashForBikes — UK's Trusted Motorbike Buyer",
-  description: "CashForBikes is the UK's leading buyer of used and damaged motorbikes. Family-run, DVLA registered, paying the best prices nationwide.",
+  description: "CashForBikes is the UK's buyer of used and damaged motorbikes. Family-run, paying the best prices nationwide.",
   openGraph: {
     title: "About CashForBikes",
-    description: "Family-run, DVLA registered, paying the best prices nationwide.",
+    description: "Family-run, paying the best prices nationwide.",
   },
 };
 
@@ -34,9 +34,8 @@ export default function AboutPage() {
       <section className="mx-auto max-w-7xl px-4 py-20 md:px-8">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           {[
-            { icon: ShieldCheck, title: "DVLA Registered", text: "Fully compliant motor trader. Your paperwork handled correctly, every time." },
-            { icon: Users, title: "10,000+ Riders", text: "Thousands of bikers across the UK have sold to us — and would do it again." },
-            { icon: Award, title: "Best Prices", text: "Live market data means we consistently beat dealer trade-in valuations." },
+            { icon: Users, title: "Trusted Motorcycle Buyers", text: "Bikers across the UK have sold to us — and would do it again." },
+            { icon: Award, title: "Competitive & Fair Offers", text: "Customer Satisfaction Focused." },
             { icon: MapPin, title: "UK Nationwide", text: "From Cornwall to Glasgow, our drivers collect anywhere in the UK." },
           ].map((c) => (
             <div key={c.title} className="rounded-2xl border border-border bg-card p-6">
