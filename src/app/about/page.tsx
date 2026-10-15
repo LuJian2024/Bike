@@ -1,6 +1,6 @@
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { Users, Award, MapPin } from "lucide-react";
+import { Users, Award, MapPin, TrendingUp } from "lucide-react";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -31,12 +31,29 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* Competitor Price Match Banner */}
+        <div className="mt-12 rounded-3xl border border-primary/30 bg-card/60 p-8 text-center md:p-12">
+          <h2 className="font-display text-3xl font-bold tracking-wide text-primary md:text-4xl">
+            WE BEAT COMPETITORS QUOTES!
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-foreground">
+            Got a quote from another motorcycle buyer?
+          </p>
+          <p className="mx-auto mt-2 max-w-2xl text-muted-foreground">
+            Send us their original written quote and we will offer you MORE for your bike!
+          </p>
+          <p className="mt-6 text-xs text-muted-foreground/60">
+            * Subject to verification of a valid written quote from a registered UK motorbike buyer.
+          </p>
+        </div>
+
       <section className="mx-auto max-w-7xl px-4 py-20 md:px-8">
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           {[
             { icon: Users, title: "Trusted Motorcycle Buyers", text: "Bikers across the UK have sold to us — and would do it again." },
             { icon: Award, title: "Competitive & Fair Offers", text: "Customer Satisfaction Focused." },
             { icon: MapPin, title: "UK Nationwide", text: "From Cornwall to Glasgow, our drivers collect anywhere in the UK." },
+            { icon: TrendingUp, title: "We Beat Competitors", text: "Send us a written quote and we will aim to offer you MORE." },
           ].map((c) => (
             <div key={c.title} className="rounded-2xl border border-border bg-card p-6">
               <c.icon className="h-8 w-8 text-primary" />
