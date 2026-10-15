@@ -31,7 +31,23 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Competitor Price Match Banner */}
+      <section className="mx-auto max-w-7xl px-4 py-20 md:px-8">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+          {[
+            { icon: Users, title: "Trusted Motorcycle Buyers", text: "Bikers across the UK have sold to us — and would do it again." },
+            { icon: Award, title: "Competitive & Fair Offers", text: "Customer Satisfaction Focused." },
+            { icon: MapPin, title: "UK Nationwide", text: "From Cornwall to Glasgow, our drivers collect anywhere in the UK." },
+            { icon: TrendingUp, title: "We Beat Competitors", text: "Send us a written quote and we will aim to offer you MORE." },
+          ].map((c) => (
+            <div key={c.title} className="flex flex-col items-center text-center rounded-2xl border border-border bg-card p-6">
+              <c.icon className="h-8 w-8 text-primary" />
+              <h3 className="mt-4 font-display text-xl tracking-wide">{c.title}</h3>
+              <p className="mt-2 text-sm text-muted-foreground">{c.text}</p>
+            </div>
+          ))}
+        </div>
+
+          {/* Competitor Price Match Banner */}
         <div className="mt-12 rounded-3xl border border-primary/30 bg-card/60 p-8 text-center md:p-12">
           <h2 className="font-display text-3xl font-bold tracking-wide text-primary md:text-4xl">
             WE BEAT COMPETITORS QUOTES!
@@ -47,25 +63,9 @@ export default function AboutPage() {
           </p>
         </div>
 
-      <section className="mx-auto max-w-7xl px-4 py-20 md:px-8">
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-          {[
-            { icon: Users, title: "Trusted Motorcycle Buyers", text: "Bikers across the UK have sold to us — and would do it again." },
-            { icon: Award, title: "Competitive & Fair Offers", text: "Customer Satisfaction Focused." },
-            { icon: MapPin, title: "UK Nationwide", text: "From Cornwall to Glasgow, our drivers collect anywhere in the UK." },
-            { icon: TrendingUp, title: "We Beat Competitors", text: "Send us a written quote and we will aim to offer you MORE." },
-          ].map((c) => (
-            <div key={c.title} className="rounded-2xl border border-border bg-card p-6">
-              <c.icon className="h-8 w-8 text-primary" />
-              <h3 className="mt-4 font-display text-xl tracking-wide">{c.title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{c.text}</p>
-            </div>
-          ))}
-        </div>
-
         <div className="mt-20 grid gap-12 rounded-3xl border border-border bg-card p-10 md:grid-cols-2 md:p-16">
           <div>
-            <h2 className="font-display text-4xl tracking-wide md:text-5xl">Our Story</h2>
+            <h2 className="text-primary font-display text-4xl tracking-wide md:text-5xl">Our Story</h2>
             <p className="mt-4 text-muted-foreground">
               Cash For Bikes started in a garage in 2015 with one ex-courier, one old Transit, and a
               stubborn belief that selling a motorbike should not be painful.
@@ -76,7 +76,7 @@ export default function AboutPage() {
             </p>
           </div>
           <div>
-            <h2 className="font-display text-4xl tracking-wide md:text-5xl">Our Promise</h2>
+            <h2 className="text-primary font-display text-4xl tracking-wide md:text-5xl">Our Promise</h2>
             <ul className="mt-4 space-y-3 text-muted-foreground">
               <li>· No hidden fees, no admin charges, no last-minute price drops.</li>
               <li>· Same-day payment via instant bank transfer.</li>
