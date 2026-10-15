@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Wrench, ClipboardCheck, AlertTriangle, XCircle, Bike, Phone, Truck, PoundSterling, Clock, ShieldCheck, ArrowRight } from "lucide-react";
+import { Wrench, ClipboardCheck, AlertTriangle, XCircle, Bike, Phone, Truck, PoundSterling, Clock, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import heroImg from "@/assets/hero-3.png";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -25,10 +25,10 @@ const steps = [
 ];
 
 const stats = [
-  { value: "10,000+", label: "Bikes Bought" },
-  { value: "24h", label: "Avg Collection" },
-  { value: "£100M+", label: "Paid Out" },
-  { value: "4.9★", label: "Customer Rating" },
+  { value: "£0", label: "Quote Fee" },
+  { value: "ALL", label: "Bike Conditions" },
+  { value: "FAST", label: "Cash Offers" },
+  { value: "EASY", label: "Bike Collection" },
 ];
 
 function Home() {
@@ -83,9 +83,6 @@ function Home() {
             </div>
 
             <div className="mt-10 grid grid-cols-3 gap-6 border-t border-border/60 pt-6">
-              <div className="flex items-center justify-center gap-1 text-xs uppercase tracking-wider text-muted-foreground">
-                <ShieldCheck className="h-5 w-5 shrink-0 text-primary" /> DVLA Registered
-              </div>
               <div className="flex items-center justify-center gap-1 text-xs uppercase tracking-wider text-muted-foreground">
                 <Clock className="h-5 w-5 shrink-0 text-primary" /> Fast Payment
               </div>
