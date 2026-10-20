@@ -2,6 +2,22 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
+// Ова ги дефинира global променливите за TypeScript да не плаче
+declare global {
+  interface Window {
+    gtag?: (...args: any[]) => void;
+    fbq?: (...args: any[]) => void;
+  }
+}
+
+// pri ev probl zameni so : 
+// declare global {
+//   interface Window {
+//     gtag?: (...args: unknown[]) => void;
+//     fbq?: (...args: unknown[]) => void;
+//   }
+// }
+
 export default function CookieBanner() {
   const [show, setShow] = useState(false);
 
@@ -11,10 +27,27 @@ export default function CookieBanner() {
 
   const decide = (granted: boolean) => {
     localStorage.setItem("cookie-consent", granted ? "granted" : "denied");
-    //  @ts-ignore
-    window.gtag?.("consent", "update", {
-      analytics_storage: granted ? "granted" : "denied",
-    });
+    
+    // Google Analytics Consent Update
+    if (typeof window !== "undefined" && window.gtag) {
+      window.gtag("consent", "update", {
+        analytics_storage: granted ? "granted" : "denied",
+        ad_storage: granted ? "granted" : "denied",
+        ad_user_data: granted ? "granted" : "denied",
+        ad_personalization: granted ? "granted" : "denied",
+      });
+    }
+
+    // Meta Pixel Consent Update
+    if (typeof window !== "undefined" && window.fbq) {
+      if (granted) {
+        window.fbq("consent", "grant");
+        window.fbq("track", "PageView");
+      } else {
+        window.fbq("consent", "revoke");
+      }
+    }
+
     setShow(false);
   };
 
