@@ -84,7 +84,15 @@ export default function RootLayout({
             s.parentNode.insertBefore(t,s)}(window, document,'script',
             'https://connect.facebook.net/en_US/fbevents.js');
             fbq('init', '1125790346562399');
-            fbq('track', 'PageView');
+           try {
+              if (localStorage.getItem('cookie-consent') === 'granted') {
+                fbq('track', 'PageView');
+              } else {
+                fbq('consent', 'revoke');
+              }
+            } catch(e) {
+              fbq('consent', 'revoke');
+            }
           `}
         </Script>
         <noscript>
